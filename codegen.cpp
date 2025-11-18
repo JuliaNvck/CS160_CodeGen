@@ -17,7 +17,7 @@ void Codegen::emit_data(const Program& prog) {
     // emit: gfp.<name>: .quad "<name>"
     for (const auto& [fname, ftype] : prog.funptrs) {
         out_ << ".globl gfp." << fname << "\n";
-        out_ << "gfp." << fname << ": .quad \"" << fname << "\"\n\n";
+        out_ << "gfp." << fname << ": .quad \"" << fname << "\"\n\n\n";
     }
 
     out_ << ".globl __NULL\n";

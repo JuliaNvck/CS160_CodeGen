@@ -17,7 +17,7 @@ if [ ! -f "./codegen" ]; then
 fi
 
 # Test directory
-TEST_DIR="student-tests/ts1"
+TEST_DIR="student-tests/ts2"
 
 if [ ! -d "$TEST_DIR" ]; then
     echo -e "${RED}Error: Test directory '$TEST_DIR' not found.${NC}"

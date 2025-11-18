@@ -1,5 +1,13 @@
 .data
 
+.globl gfp.PVVUFU3L3
+gfp.PVVUFU3L3: .quad "PVVUFU3L3"
+
+
+.globl gfp.WwCHHS5X0
+gfp.WwCHHS5X0: .quad "WwCHHS5X0"
+
+
 .globl __NULL
 __NULL: .zero 8
 
@@ -9,341 +17,1222 @@ invalid_alloc_msg: .string "invalid allocation amount"
 
 .text
 
+.globl PVVUFU3L3
+PVVUFU3L3:
+  pushq %rbp
+  movq %rsp, %rbp
+  subq $448, %rsp
+  movq $0, -8(%rbp)
+  movq %rdi, -416(%rbp)
+  movq %rsi, -424(%rbp)
+  movq %rdx, -432(%rbp)
+  movq %rcx, -440(%rbp)
+  movq %r8, -448(%rbp)
+  movq %rbp, %rdi
+  addq $-408, %rdi
+  movq $50, %rsi
+  call _cflat_zero_words
+  jmp PVVUFU3L3_entry
+
+PVVUFU3L3_entry:
+  movq $0, -16(%rbp)
+  movq $103845844, -24(%rbp)
+  movq $131640549, -32(%rbp)
+  movq $139705729, -40(%rbp)
+  movq $152786250, -48(%rbp)
+  movq $189141399, -56(%rbp)
+  movq $253550561, -64(%rbp)
+  movq $262865582, -72(%rbp)
+  movq $264920210, -80(%rbp)
+  movq $276354813, -88(%rbp)
+  movq $326626994, -96(%rbp)
+  movq $348870203, -104(%rbp)
+  movq $375801507, -112(%rbp)
+  movq $383788011, -120(%rbp)
+  movq $413685625, -128(%rbp)
+  movq $416878563, -136(%rbp)
+  movq $423791831, -144(%rbp)
+  movq $42924232, -152(%rbp)
+  movq $450353057, -160(%rbp)
+  movq $485051754, -168(%rbp)
+  movq $491172041, -176(%rbp)
+  movq $543464221, -184(%rbp)
+  movq $616234280, -192(%rbp)
+  movq $637682279, -200(%rbp)
+  movq $638545012, -208(%rbp)
+  movq $644767014, -216(%rbp)
+  movq $650434110, -224(%rbp)
+  movq $697522135, -232(%rbp)
+  movq $703039692, -240(%rbp)
+  movq $747001504, -248(%rbp)
+  movq $757562791, -256(%rbp)
+  movq $800469784, -264(%rbp)
+  movq $800545659, -272(%rbp)
+  movq $821506538, -280(%rbp)
+  movq $85537856, -288(%rbp)
+  movq $874816044, -296(%rbp)
+  movq $897307130, -304(%rbp)
+  movq $908893779, -312(%rbp)
+  movq $985996657, -320(%rbp)
+  movq $-341649152, -328(%rbp)
+  movq $-416780648, -336(%rbp)
+  movq $-556976654, -344(%rbp)
+  movq $-789912159, -352(%rbp)
+  movq $-810102459, -360(%rbp)
+  movq -200(%rbp), %r8
+  movq %r8, -432(%rbp)
+  movq -16(%rbp), %r8
+  subq -416(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -368(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl1
+  jmp PVVUFU3L3_lbl2
+
+PVVUFU3L3_lbl1:
+  movq -128(%rbp), %r8
+  movq %r8, -416(%rbp)
+  movq -432(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -40(%rbp), %r8
+  movq %r8, -416(%rbp)
+  movq -424(%rbp), %r8
+  movq %r8, -448(%rbp)
+  movq -424(%rbp), %rax
+  jmp PVVUFU3L3_epilogue
+
+PVVUFU3L3_lbl10:
+  movq -72(%rbp), %r8
+  movq %r8, -368(%rbp)
+  jmp PVVUFU3L3_lbl12
+
+PVVUFU3L3_lbl11:
+  movq -16(%rbp), %r8
+  movq %r8, -368(%rbp)
+  jmp PVVUFU3L3_lbl12
+
+PVVUFU3L3_lbl12:
+  movq -168(%rbp), %rdi
+  movq -424(%rbp), %rsi
+  movq -232(%rbp), %rdx
+  movq -448(%rbp), %rcx
+  call E
+  movq %rax, -408(%rbp)
+  movq -432(%rbp), %rdi
+  movq -432(%rbp), %rsi
+  movq -416(%rbp), %rdx
+  movq -424(%rbp), %rcx
+  movq -432(%rbp), %r8
+  movq -56(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -384(%rbp)
+  movq -384(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %rdi
+  movq -408(%rbp), %rsi
+  movq -424(%rbp), %rdx
+  movq -368(%rbp), %rcx
+  movq -432(%rbp), %r8
+  call PVVUFU3L3
+  movq -360(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -440(%rbp), %rdi
+  movq -304(%rbp), %rsi
+  movq -432(%rbp), %rdx
+  movq -152(%rbp), %rcx
+  call E
+  movq %rax, -368(%rbp)
+  movq -368(%rbp), %rdi
+  movq -352(%rbp), %rsi
+  call mXCUSv7P
+  movq -440(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  movq -440(%rbp), %rdx
+  movq -416(%rbp), %rcx
+  call E
+  movq %rax, -368(%rbp)
+  call ZNu7VqUBiH
+  movq %rax, -408(%rbp)
+  movq -408(%rbp), %rdi
+  movq -368(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -376(%rbp)
+  movq -256(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl13
+  jmp PVVUFU3L3_lbl14
+
+PVVUFU3L3_lbl13:
+  movq -432(%rbp), %r8
+  movq %r8, -368(%rbp)
+  jmp PVVUFU3L3_lbl15
+
+PVVUFU3L3_lbl14:
+  movq -16(%rbp), %r8
+  movq %r8, -368(%rbp)
+  jmp PVVUFU3L3_lbl15
+
+PVVUFU3L3_lbl15:
+  movq -368(%rbp), %rdi
+  movq -440(%rbp), %rsi
+  movq -104(%rbp), %rdx
+  movq -376(%rbp), %rcx
+  movq -440(%rbp), %r8
+  call PVVUFU3L3
+  movq -16(%rbp), %r8
+  subq -416(%rbp), %r8
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  movq %r8, -432(%rbp)
+  jmp PVVUFU3L3_lbl9
+
+PVVUFU3L3_lbl16:
+  movq -16(%rbp), %r8
+  subq -424(%rbp), %r8
+  movq %r8, -408(%rbp)
+  movq -408(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl17
+  jmp PVVUFU3L3_lbl18
+
+PVVUFU3L3_lbl17:
+  movq -424(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -408(%rbp)
+  movq -408(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -440(%rbp), %r8
+  movq %r8, -440(%rbp)
+  movq -144(%rbp), %r8
+  cmpq -344(%rbp), %r8
+  movq $0, %r8
+  setge %r8b
+  movq %r8, -408(%rbp)
+  movq -432(%rbp), %rdi
+  movq -408(%rbp), %rsi
+  movq -448(%rbp), %rdx
+  movq -440(%rbp), %rcx
+  call E
+  movq -448(%rbp), %r8
+  movq %r8, -416(%rbp)
+  jmp PVVUFU3L3_lbl19
+
+PVVUFU3L3_lbl18:
+  movq -448(%rbp), %r8
+  movq %r8, -440(%rbp)
+  call ZNu7VqUBiH
+  call ZNu7VqUBiH
+  movq %rax, -408(%rbp)
+  movq -16(%rbp), %r8
+  subq -408(%rbp), %r8
+  movq %r8, -400(%rbp)
+  movq -400(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -416(%rbp), %rax
+  jmp PVVUFU3L3_epilogue
+
+PVVUFU3L3_lbl19:
+  movq -336(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl20
+  jmp PVVUFU3L3_lbl21
+
+PVVUFU3L3_lbl2:
+  movq -440(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -368(%rbp)
+  movq -368(%rbp), %r8
+  movq %r8, -440(%rbp)
+  movq -120(%rbp), %r8
+  movq %r8, -432(%rbp)
+  jmp PVVUFU3L3_lbl4
+
+PVVUFU3L3_lbl20:
+  call ZNu7VqUBiH
+  movq %rax, -408(%rbp)
+  movq -16(%rbp), %r8
+  subq -416(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -440(%rbp), %r8
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl23
+  jmp PVVUFU3L3_lbl22
+
+PVVUFU3L3_lbl21:
+  call ZNu7VqUBiH
+  jmp PVVUFU3L3_lbl16
+
+PVVUFU3L3_lbl22:
+  movq -432(%rbp), %r8
+  movq %r8, -376(%rbp)
+  jmp PVVUFU3L3_lbl23
+
+PVVUFU3L3_lbl23:
+  movq -440(%rbp), %rdi
+  movq -88(%rbp), %rsi
+  movq -448(%rbp), %rdx
+  movq -432(%rbp), %rcx
+  call E
+  movq %rax, -384(%rbp)
+  movq -432(%rbp), %r8
+  cmpq -424(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -392(%rbp)
+  movq -392(%rbp), %rdi
+  movq -384(%rbp), %rsi
+  movq -376(%rbp), %rdx
+  movq -432(%rbp), %rcx
+  movq -368(%rbp), %r8
+  movq -408(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -400(%rbp)
+  movq -400(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -408(%rbp)
+  movq -408(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -424(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -408(%rbp)
+  movq -248(%rbp), %rdi
+  movq -424(%rbp), %rsi
+  movq -408(%rbp), %rdx
+  movq -424(%rbp), %rcx
+  movq -424(%rbp), %r8
+  movq -288(%rbp), %r9
+  call WwCHHS5X0
+  movq -424(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -408(%rbp)
+  movq -408(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  movq -432(%rbp), %rdx
+  movq -448(%rbp), %rcx
+  call E
+  movq %rax, -400(%rbp)
+  movq -400(%rbp), %r8
+  movq %r8, -448(%rbp)
+  movq -432(%rbp), %r8
+  movq %r8, -416(%rbp)
+  movq -264(%rbp), %r8
+  movq %r8, -400(%rbp)
+  movq -400(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl25
+  jmp PVVUFU3L3_lbl24
+
+PVVUFU3L3_lbl24:
+  call ZNu7VqUBiH
+  movq %rax, -408(%rbp)
+  movq -408(%rbp), %r8
+  movq %r8, -400(%rbp)
+  jmp PVVUFU3L3_lbl25
+
+PVVUFU3L3_lbl25:
+  movq -400(%rbp), %r8
+  movq %r8, -440(%rbp)
+  movq -272(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -400(%rbp)
+  movq -400(%rbp), %r8
+  movq %r8, -424(%rbp)
+  jmp PVVUFU3L3_lbl19
+
+PVVUFU3L3_lbl3:
+  jmp PVVUFU3L3_lbl16
+
+PVVUFU3L3_lbl4:
+  movq -424(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl5
+  jmp PVVUFU3L3_lbl6
+
+PVVUFU3L3_lbl5:
+  call ZNu7VqUBiH
+  movq -440(%rbp), %r8
+  cmpq -424(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -368(%rbp)
+  movq -368(%rbp), %r8
+  movq %r8, -448(%rbp)
+  movq -424(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  movq -448(%rbp), %rdx
+  movq -448(%rbp), %rcx
+  movq -432(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -368(%rbp)
+  movq -440(%rbp), %rdi
+  movq -368(%rbp), %rsi
+  movq -432(%rbp), %rdx
+  movq -416(%rbp), %rcx
+  call E
+  movq %rax, -376(%rbp)
+  movq -432(%rbp), %r8
+  addq -440(%rbp), %r8
+  movq %r8, -384(%rbp)
+  movq -16(%rbp), %r8
+  subq -384(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -160(%rbp), %r8
+  cmpq -432(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -384(%rbp)
+  movq -416(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -392(%rbp)
+  movq -448(%rbp), %rdi
+  movq -136(%rbp), %rsi
+  movq -432(%rbp), %rdx
+  movq -416(%rbp), %rcx
+  movq -96(%rbp), %r8
+  movq -432(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -400(%rbp)
+  movq -440(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  movq -432(%rbp), %rdx
+  movq -400(%rbp), %rcx
+  movq -392(%rbp), %r8
+  movq -184(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -408(%rbp)
+  movq -408(%rbp), %rdi
+  movq -384(%rbp), %rsi
+  movq -368(%rbp), %rdx
+  movq -376(%rbp), %rcx
+  movq -440(%rbp), %r8
+  call PVVUFU3L3
+  movq -296(%rbp), %r8
+  cmpq -448(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  movq %r8, -440(%rbp)
+  call ZNu7VqUBiH
+  call ZNu7VqUBiH
+  jmp PVVUFU3L3_lbl4
+
+PVVUFU3L3_lbl6:
+  movq -432(%rbp), %r8
+  movq %r8, -440(%rbp)
+  movq -448(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl7
+  jmp PVVUFU3L3_lbl8
+
+PVVUFU3L3_lbl7:
+  movq -328(%rbp), %r8
+  movq %r8, -424(%rbp)
+  movq -320(%rbp), %r8
+  cmpq -176(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -376(%rbp)
+  movq -16(%rbp), %r8
+  subq -432(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -432(%rbp), %rdi
+  movq -368(%rbp), %rsi
+  movq -376(%rbp), %rdx
+  movq -440(%rbp), %rcx
+  call E
+  movq %rax, -384(%rbp)
+  movq -416(%rbp), %rdi
+  movq -216(%rbp), %rsi
+  movq -384(%rbp), %rdx
+  movq -224(%rbp), %rcx
+  movq -448(%rbp), %r8
+  movq -80(%rbp), %r9
+  call WwCHHS5X0
+  movq -16(%rbp), %r8
+  subq -440(%rbp), %r8
+  movq %r8, -384(%rbp)
+  movq -416(%rbp), %rdi
+  movq -424(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -376(%rbp)
+  movq -376(%rbp), %rdi
+  movq -384(%rbp), %rsi
+  movq -416(%rbp), %rdx
+  movq -416(%rbp), %rcx
+  movq -440(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -368(%rbp)
+  movq -312(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -384(%rbp)
+  movq -424(%rbp), %rdi
+  movq -440(%rbp), %rsi
+  movq -424(%rbp), %rdx
+  movq -384(%rbp), %rcx
+  movq -416(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -376(%rbp)
+  movq -424(%rbp), %rdi
+  movq -112(%rbp), %rsi
+  movq -376(%rbp), %rdx
+  movq -368(%rbp), %rcx
+  movq -32(%rbp), %r8
+  call PVVUFU3L3
+  movq -448(%rbp), %r8
+  movq %r8, -432(%rbp)
+  movq -16(%rbp), %r8
+  subq -440(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -368(%rbp), %r8
+  movq %r8, -416(%rbp)
+  call ZNu7VqUBiH
+  movq %rax, -368(%rbp)
+  movq -448(%rbp), %r8
+  cmpq -368(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -368(%rbp)
+  movq -368(%rbp), %r8
+  movq %r8, -432(%rbp)
+  jmp PVVUFU3L3_lbl9
+
+PVVUFU3L3_lbl8:
+  movq -416(%rbp), %rdi
+  movq -416(%rbp), %rsi
+  movq -416(%rbp), %rdx
+  movq -24(%rbp), %rcx
+  call E
+  call ZNu7VqUBiH
+  movq %rax, -368(%rbp)
+  movq -240(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -376(%rbp)
+  movq -48(%rbp), %rdi
+  movq -280(%rbp), %rsi
+  movq -440(%rbp), %rdx
+  movq -192(%rbp), %rcx
+  movq -416(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -384(%rbp)
+  movq -376(%rbp), %r8
+  cmpq -384(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -408(%rbp)
+  movq -64(%rbp), %rdi
+  movq -432(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -384(%rbp)
+  movq -448(%rbp), %rdi
+  movq -384(%rbp), %rsi
+  movq -448(%rbp), %rdx
+  movq -408(%rbp), %rcx
+  movq -368(%rbp), %r8
+  movq -432(%rbp), %r9
+  call WwCHHS5X0
+  movq -416(%rbp), %r8
+  imulq -440(%rbp), %r8
+  movq %r8, -368(%rbp)
+  movq -368(%rbp), %r8
+  cmpq $0, %r8
+  jne PVVUFU3L3_lbl10
+  jmp PVVUFU3L3_lbl11
+
+PVVUFU3L3_lbl9:
+  movq -16(%rbp), %r8
+  subq -432(%rbp), %r8
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  movq %r8, -448(%rbp)
+  movq -440(%rbp), %r8
+  subq -424(%rbp), %r8
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -368(%rbp)
+  movq -440(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -376(%rbp)
+  movq -376(%rbp), %rdi
+  movq -448(%rbp), %rsi
+  movq -208(%rbp), %rdx
+  movq -416(%rbp), %rcx
+  movq -368(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -408(%rbp)
+  movq -408(%rbp), %r8
+  movq %r8, -432(%rbp)
+  jmp PVVUFU3L3_lbl3
+
+PVVUFU3L3_epilogue:
+  movq %rbp, %rsp
+  popq %rbp
+  ret
+
+.globl WwCHHS5X0
+WwCHHS5X0:
+  pushq %rbp
+  movq %rsp, %rbp
+  subq $352, %rsp
+  movq $0, -8(%rbp)
+  movq %rdi, -304(%rbp)
+  movq %rsi, -312(%rbp)
+  movq %rdx, -320(%rbp)
+  movq %rcx, -328(%rbp)
+  movq %r8, -336(%rbp)
+  movq %r9, -344(%rbp)
+  movq %rbp, %rdi
+  addq $-296, %rdi
+  movq $36, %rsi
+  call _cflat_zero_words
+  jmp WwCHHS5X0_entry
+
+WwCHHS5X0_entry:
+  movq $0, -16(%rbp)
+  movq $149425446, -24(%rbp)
+  movq $191296847, -32(%rbp)
+  movq $231045025, -40(%rbp)
+  movq $291019874, -48(%rbp)
+  movq $308782408, -56(%rbp)
+  movq $382217779, -64(%rbp)
+  movq $387813878, -72(%rbp)
+  movq $405273100, -80(%rbp)
+  movq $407930695, -88(%rbp)
+  movq $45902690, -96(%rbp)
+  movq $516796929, -104(%rbp)
+  movq $581318756, -112(%rbp)
+  movq $608192162, -120(%rbp)
+  movq $645563223, -128(%rbp)
+  movq $651203604, -136(%rbp)
+  movq $685713279, -144(%rbp)
+  movq $699548945, -152(%rbp)
+  movq $797130808, -160(%rbp)
+  movq $815726828, -168(%rbp)
+  movq $830796752, -176(%rbp)
+  movq $841832893, -184(%rbp)
+  movq $871833993, -192(%rbp)
+  movq $875099452, -200(%rbp)
+  movq $903807211, -208(%rbp)
+  movq $933472308, -216(%rbp)
+  movq $988164547, -224(%rbp)
+  movq $-117616040, -232(%rbp)
+  movq $-293340890, -240(%rbp)
+  movq -144(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl1
+  jmp WwCHHS5X0_lbl2
+
+WwCHHS5X0_lbl1:
+  movq -168(%rbp), %r8
+  movq %r8, -256(%rbp)
+  jmp WwCHHS5X0_lbl3
+
+WwCHHS5X0_lbl10:
+  movq -304(%rbp), %r8
+  movq %r8, -264(%rbp)
+  jmp WwCHHS5X0_lbl11
+
+WwCHHS5X0_lbl11:
+  movq -328(%rbp), %rdi
+  movq -264(%rbp), %rsi
+  movq -304(%rbp), %rdx
+  movq -328(%rbp), %rcx
+  movq -336(%rbp), %r8
+  movq -248(%rbp), %r9
+  call WwCHHS5X0
+  jmp WwCHHS5X0_lbl7
+
+WwCHHS5X0_lbl12:
+  movq -312(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl13
+  jmp WwCHHS5X0_lbl14
+
+WwCHHS5X0_lbl13:
+  movq -312(%rbp), %r8
+  movq %r8, -328(%rbp)
+  movq -104(%rbp), %rdi
+  movq -160(%rbp), %rsi
+  movq -328(%rbp), %rdx
+  movq -336(%rbp), %rcx
+  call E
+  movq %rax, -248(%rbp)
+  movq -248(%rbp), %r8
+  movq %r8, -304(%rbp)
+  movq -328(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -344(%rbp), %r8
+  movq %r8, -344(%rbp)
+  movq -320(%rbp), %r8
+  movq %r8, -344(%rbp)
+  movq -336(%rbp), %rdi
+  movq -344(%rbp), %rsi
+  movq -312(%rbp), %rdx
+  movq -336(%rbp), %rcx
+  call E
+  movq %rax, -248(%rbp)
+  movq -248(%rbp), %rdi
+  movq -344(%rbp), %rsi
+  movq -312(%rbp), %rdx
+  movq -304(%rbp), %rcx
+  movq -304(%rbp), %r8
+  call PVVUFU3L3
+  movq %rax, -264(%rbp)
+  movq -312(%rbp), %rdi
+  movq -264(%rbp), %rsi
+  call mXCUSv7P
+  jmp WwCHHS5X0_lbl12
+
+WwCHHS5X0_lbl14:
+  movq -32(%rbp), %rdi
+  movq -320(%rbp), %rsi
+  call mXCUSv7P
+  jmp WwCHHS5X0_lbl15
+
+WwCHHS5X0_lbl15:
+  movq -96(%rbp), %r8
+  imulq -304(%rbp), %r8
+  movq %r8, -264(%rbp)
+  call ZNu7VqUBiH
+  movq %rax, -248(%rbp)
+  movq -264(%rbp), %r8
+  cmpq -248(%rbp), %r8
+  movq $0, %r8
+  setge %r8b
+  movq %r8, -296(%rbp)
+  movq -296(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl16
+  jmp WwCHHS5X0_lbl17
+
+WwCHHS5X0_lbl16:
+  movq -328(%rbp), %rdi
+  movq -344(%rbp), %rsi
+  movq -304(%rbp), %rdx
+  movq -200(%rbp), %rcx
+  call E
+  movq -336(%rbp), %rdi
+  movq -136(%rbp), %rsi
+  movq -208(%rbp), %rdx
+  movq -328(%rbp), %rcx
+  call E
+  movq %rax, -296(%rbp)
+  movq -296(%rbp), %rdi
+  movq -328(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -248(%rbp)
+  movq -184(%rbp), %r8
+  addq -312(%rbp), %r8
+  movq %r8, -296(%rbp)
+  movq -296(%rbp), %r8
+  movq %r8, -264(%rbp)
+  movq -264(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl19
+  jmp WwCHHS5X0_lbl18
+
+WwCHHS5X0_lbl17:
+  movq -304(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -344(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl20
+  jmp WwCHHS5X0_lbl21
+
+WwCHHS5X0_lbl18:
+  movq -72(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -296(%rbp)
+  movq -296(%rbp), %r8
+  movq %r8, -264(%rbp)
+  jmp WwCHHS5X0_lbl19
+
+WwCHHS5X0_lbl19:
+  call ZNu7VqUBiH
+  movq %rax, -296(%rbp)
+  movq -296(%rbp), %r8
+  cmpq -328(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -256(%rbp)
+  movq -336(%rbp), %rdi
+  movq -312(%rbp), %rsi
+  movq -256(%rbp), %rdx
+  movq -264(%rbp), %rcx
+  movq -328(%rbp), %r8
+  movq -248(%rbp), %r9
+  call WwCHHS5X0
+  movq -240(%rbp), %r8
+  imulq -328(%rbp), %r8
+  movq %r8, -248(%rbp)
+  movq -248(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -264(%rbp)
+  movq -264(%rbp), %r8
+  movq %r8, -336(%rbp)
+  movq -16(%rbp), %r8
+  subq -320(%rbp), %r8
+  movq %r8, -264(%rbp)
+  movq -232(%rbp), %r8
+  imulq -264(%rbp), %r8
+  movq %r8, -248(%rbp)
+  movq -224(%rbp), %rdi
+  movq -248(%rbp), %rsi
+  movq -304(%rbp), %rdx
+  movq -312(%rbp), %rcx
+  movq -312(%rbp), %r8
+  movq -312(%rbp), %r9
+  call WwCHHS5X0
+  movq -48(%rbp), %r8
+  movq %r8, -336(%rbp)
+  movq -336(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -88(%rbp), %r8
+  movq %r8, -344(%rbp)
+  movq -320(%rbp), %r8
+  movq %r8, -312(%rbp)
+  jmp WwCHHS5X0_lbl15
+
+WwCHHS5X0_lbl2:
+  movq -16(%rbp), %r8
+  movq %r8, -256(%rbp)
+  jmp WwCHHS5X0_lbl3
+
+WwCHHS5X0_lbl20:
+  movq -336(%rbp), %r8
+  movq %r8, -336(%rbp)
+  movq -304(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -320(%rbp), %r8
+  movq %r8, -328(%rbp)
+  jmp WwCHHS5X0_lbl22
+
+WwCHHS5X0_lbl21:
+  jmp WwCHHS5X0_lbl22
+
+WwCHHS5X0_lbl22:
+  jmp WwCHHS5X0_lbl6
+
+WwCHHS5X0_lbl3:
+  movq -16(%rbp), %r8
+  subq -256(%rbp), %r8
+  movq %r8, -248(%rbp)
+  movq -328(%rbp), %rdi
+  movq -248(%rbp), %rsi
+  movq -304(%rbp), %rdx
+  movq -312(%rbp), %rcx
+  movq -320(%rbp), %r8
+  movq -40(%rbp), %r9
+  call WwCHHS5X0
+  movq -16(%rbp), %r8
+  subq -312(%rbp), %r8
+  movq %r8, -256(%rbp)
+  movq -16(%rbp), %r8
+  subq -256(%rbp), %r8
+  movq %r8, -248(%rbp)
+  movq -16(%rbp), %r8
+  subq -320(%rbp), %r8
+  movq %r8, -264(%rbp)
+  movq -16(%rbp), %r8
+  subq -264(%rbp), %r8
+  movq %r8, -256(%rbp)
+  movq -256(%rbp), %rdi
+  movq -248(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -264(%rbp)
+  movq -264(%rbp), %r8
+  movq %r8, -304(%rbp)
+  movq -216(%rbp), %r8
+  movq %r8, -328(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -304(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl4
+  jmp WwCHHS5X0_lbl5
+
+WwCHHS5X0_lbl4:
+  jmp WwCHHS5X0_lbl7
+
+WwCHHS5X0_lbl5:
+  jmp WwCHHS5X0_lbl6
+
+WwCHHS5X0_lbl6:
+  movq -328(%rbp), %r8
+  movq %r8, -320(%rbp)
+  movq -16(%rbp), %r8
+  subq -320(%rbp), %r8
+  movq %r8, -248(%rbp)
+  movq -248(%rbp), %r8
+  movq %r8, -312(%rbp)
+  movq -304(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -248(%rbp)
+  movq -248(%rbp), %rax
+  jmp WwCHHS5X0_epilogue
+
+WwCHHS5X0_lbl7:
+  movq -128(%rbp), %r8
+  cmpq -304(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -264(%rbp)
+  movq -264(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl8
+  jmp WwCHHS5X0_lbl9
+
+WwCHHS5X0_lbl8:
+  movq -304(%rbp), %rdi
+  movq -56(%rbp), %rsi
+  call mXCUSv7P
+  movq -304(%rbp), %r8
+  movq %r8, -304(%rbp)
+  movq -320(%rbp), %rdi
+  movq -112(%rbp), %rsi
+  movq -312(%rbp), %rdx
+  movq -328(%rbp), %rcx
+  call E
+  movq %rax, -264(%rbp)
+  movq -320(%rbp), %r8
+  cmpq -320(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -248(%rbp)
+  movq -336(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -256(%rbp)
+  movq -328(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -272(%rbp)
+  movq -152(%rbp), %r8
+  imulq -192(%rbp), %r8
+  movq %r8, -280(%rbp)
+  movq -312(%rbp), %r8
+  addq -312(%rbp), %r8
+  movq %r8, -288(%rbp)
+  movq -288(%rbp), %rdi
+  movq -280(%rbp), %rsi
+  movq -272(%rbp), %rdx
+  movq -64(%rbp), %rcx
+  movq -256(%rbp), %r8
+  movq -248(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -296(%rbp)
+  movq -296(%rbp), %rdi
+  movq -336(%rbp), %rsi
+  movq -320(%rbp), %rdx
+  movq -264(%rbp), %rcx
+  movq -80(%rbp), %r8
+  call PVVUFU3L3
+  movq -328(%rbp), %r8
+  movq %r8, -344(%rbp)
+  call ZNu7VqUBiH
+  movq -120(%rbp), %r8
+  addq -312(%rbp), %r8
+  movq %r8, -264(%rbp)
+  movq -336(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -296(%rbp)
+  movq -296(%rbp), %rdi
+  movq -304(%rbp), %rsi
+  movq -264(%rbp), %rdx
+  movq -328(%rbp), %rcx
+  movq -304(%rbp), %r8
+  movq -176(%rbp), %r9
+  call WwCHHS5X0
+  movq %rax, -248(%rbp)
+  movq -344(%rbp), %r8
+  movq %r8, -264(%rbp)
+  movq -264(%rbp), %r8
+  cmpq $0, %r8
+  jne WwCHHS5X0_lbl11
+  jmp WwCHHS5X0_lbl10
+
+WwCHHS5X0_lbl9:
+  jmp WwCHHS5X0_lbl12
+
+WwCHHS5X0_epilogue:
+  movq %rbp, %rsp
+  popq %rbp
+  ret
+
 .globl main
 main:
   pushq %rbp
   movq %rsp, %rbp
-  subq $128, %rsp
+  subq $176, %rsp
   movq $0, -8(%rbp)
   movq %rbp, %rdi
-  addq $-120, %rdi
-  movq $14, %rsi
+  addq $-176, %rdi
+  movq $21, %rsi
   call _cflat_zero_words
   call _cflat_init_gc
   jmp main_entry
 
 main_entry:
   movq $0, -24(%rbp)
-  movq $582300820, -32(%rbp)
-  movq $596454822, -40(%rbp)
-  movq $59656651, -48(%rbp)
-  movq $757447469, -56(%rbp)
-  movq $863522110, -64(%rbp)
-  movq $-482903986, -72(%rbp)
-  movq $-996646422, -80(%rbp)
-  movq -120(%rbp), %r8
+  movq $181450039, -32(%rbp)
+  movq $209786426, -40(%rbp)
+  movq $400280478, -48(%rbp)
+  movq $459620576, -56(%rbp)
+  movq $494840890, -64(%rbp)
+  movq $555123227, -72(%rbp)
+  movq $581941481, -80(%rbp)
+  movq $855471715, -88(%rbp)
+  movq $874174394, -96(%rbp)
+  movq $890993311, -104(%rbp)
+  movq $938854561, -112(%rbp)
+  movq $94248330, -120(%rbp)
+  movq $96131599, -128(%rbp)
+  movq $-608815139, -136(%rbp)
+  movq $-677597059, -144(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -152(%rbp)
+  movq -152(%rbp), %r8
+  movq %r8, -16(%rbp)
+  call ZNu7VqUBiH
+  movq %rax, -152(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -160(%rbp)
+  movq -160(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -16(%rbp), %rcx
+  call E
+  movq %rax, -168(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -176(%rbp)
+  movq -176(%rbp), %r8
   cmpq $0, %r8
-  jne main_lbl1
-  jmp main_lbl2
+  jne main_lbl2
+  jmp main_lbl1
 
 main_lbl1:
-  movq -56(%rbp), %r8
+  movq -80(%rbp), %r8
+  movq %r8, -176(%rbp)
+  jmp main_lbl2
+
+main_lbl10:
+  movq -16(%rbp), %r8
+  movq %r8, -168(%rbp)
+  movq -168(%rbp), %r8
+  cmpq $0, %r8
+  jne main_lbl13
+  jmp main_lbl12
+
+main_lbl11:
+  jmp main_lbl3
+
+main_lbl12:
+  movq -16(%rbp), %r8
+  movq %r8, -168(%rbp)
+  jmp main_lbl13
+
+main_lbl13:
+  movq -16(%rbp), %rdi
+  movq -40(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -168(%rbp), %rcx
+  movq -16(%rbp), %r8
+  movq -16(%rbp), %r9
+  call WwCHHS5X0
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -168(%rbp)
+  movq -24(%rbp), %r8
+  subq -16(%rbp), %r8
+  movq %r8, -152(%rbp)
+  movq -152(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -168(%rbp), %rcx
+  call E
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -16(%rbp), %rcx
+  movq -96(%rbp), %r8
+  movq -16(%rbp), %r9
+  call WwCHHS5X0
+  jmp main_lbl9
+
+main_lbl2:
+  movq -24(%rbp), %r8
+  subq -176(%rbp), %r8
+  movq %r8, -160(%rbp)
+  movq -160(%rbp), %rdi
+  movq -120(%rbp), %rsi
+  movq -168(%rbp), %rdx
+  movq -16(%rbp), %rcx
+  movq -152(%rbp), %r8
+  call PVVUFU3L3
+  movq -72(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -152(%rbp)
+  movq -152(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -168(%rbp)
+  movq -16(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  movq -144(%rbp), %rdx
+  movq -56(%rbp), %rcx
+  movq -16(%rbp), %r8
+  movq -168(%rbp), %r9
+  call WwCHHS5X0
+  jmp main_lbl3
+
+main_lbl3:
+  movq -104(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl4
   jmp main_lbl5
 
-main_lbl10:
-  movq -120(%rbp), %r8
+main_lbl4:
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -168(%rbp)
+  movq -168(%rbp), %r8
+  subq -16(%rbp), %r8
+  movq %r8, -152(%rbp)
+  movq -152(%rbp), %r8
   cmpq -24(%rbp), %r8
   movq $0, %r8
   sete %r8b
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  cmpq $0, %r8
-  jne main_lbl11
-  jmp main_lbl12
-
-main_lbl11:
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -112(%rbp), %r8
-  subq -64(%rbp), %r8
-  movq %r8, -96(%rbp)
-  movq -120(%rbp), %r8
-  subq -96(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -112(%rbp), %r8
-  subq -120(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -16(%rbp), %r8
-  cmpq -120(%rbp), %r8
-  movq $0, %r8
-  setle %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -112(%rbp)
-  jmp main_lbl10
-
-main_lbl12:
-  movq -112(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %r8
+  movq %r8, -168(%rbp)
+  movq -168(%rbp), %r8
   movq %r8, -16(%rbp)
   jmp main_lbl6
 
-main_lbl13:
-  movq -24(%rbp), %r8
-  subq -112(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  cmpq $0, %r8
-  jne main_lbl14
-  jmp main_lbl15
-
-main_lbl14:
-  movq -48(%rbp), %r8
-  cmpq $0, %r8
-  jne main_lbl16
-  jmp main_lbl17
-
-main_lbl15:
-  jmp main_lbl3
-
-main_lbl16:
-  movq -16(%rbp), %r8
-  movq %r8, -96(%rbp)
-  jmp main_lbl18
-
-main_lbl17:
-  movq -24(%rbp), %r8
-  movq %r8, -96(%rbp)
-  jmp main_lbl18
-
-main_lbl18:
-  movq -24(%rbp), %r8
-  subq -96(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
+main_lbl5:
+  movq -136(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -112(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -96(%rbp)
-  movq -24(%rbp), %r8
-  subq -96(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
+  movq -112(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -128(%rbp), %rcx
+  call E
+  movq %rax, -168(%rbp)
+  movq -168(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -112(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -24(%rbp), %r8
-  subq -16(%rbp), %r8
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -104(%rbp)
-  movq -24(%rbp), %r8
-  subq -104(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %rax
-  jmp main_epilogue
-
-main_lbl19:
-  movq -120(%rbp), %r8
-  movq %r8, -88(%rbp)
-  jmp main_lbl20
-
-main_lbl2:
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -32(%rbp), %r8
-  cmpq -16(%rbp), %r8
-  movq $0, %r8
-  setle %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -120(%rbp), %r8
-  cmpq -120(%rbp), %r8
-  movq $0, %r8
-  setg %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -112(%rbp)
-  jmp main_lbl3
-
-main_lbl20:
-  movq -88(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -112(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -112(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -112(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -120(%rbp), %rax
-  movq -120(%rbp), %r8
-  cmpq $0, %r8
-  movq $1, %r9
-  cmoveq %r9, %r8
-  movq $0, %r9
-  cmoveq %r9, %rax
-  cqo
-  idivq %r8
-  movq %rax, -88(%rbp)
-  movq -88(%rbp), %rax
-  jmp main_epilogue
-
-main_lbl3:
-  movq -80(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  cmpq $0, %r8
-  jne main_lbl20
-  jmp main_lbl19
-
-main_lbl4:
-  movq -16(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -112(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -88(%rbp)
   movq -16(%rbp), %rax
-  movq -88(%rbp), %r8
-  cmpq $0, %r8
-  movq $1, %r9
-  cmoveq %r9, %r8
-  movq $0, %r9
-  cmoveq %r9, %rax
-  cqo
-  idivq %r8
-  movq %rax, -96(%rbp)
-  movq -112(%rbp), %r8
-  subq -96(%rbp), %r8
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
+  jmp main_epilogue
+
+main_lbl6:
+  movq -16(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl7
   jmp main_lbl8
 
-main_lbl5:
-  jmp main_lbl6
-
-main_lbl6:
-  movq -16(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -40(%rbp), %r8
-  cmpq -112(%rbp), %r8
-  movq $0, %r8
-  setge %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -16(%rbp)
-  jmp main_lbl13
-
 main_lbl7:
-  movq -112(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -112(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -72(%rbp), %r8
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -16(%rbp), %r8
-  cmpq -112(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -88(%rbp)
-  movq -88(%rbp), %r8
+  movq -16(%rbp), %rdi
+  movq -16(%rbp), %rsi
+  call mXCUSv7P
+  movq %rax, -168(%rbp)
+  movq -16(%rbp), %rdi
+  movq -88(%rbp), %rsi
+  movq -16(%rbp), %rdx
+  movq -168(%rbp), %rcx
+  call E
+  movq %rax, -152(%rbp)
+  movq -152(%rbp), %r8
   cmpq -24(%rbp), %r8
   movq $0, %r8
   sete %r8b
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
+  movq %r8, -168(%rbp)
+  movq -168(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %rdi
+  movq -64(%rbp), %rsi
+  movq -48(%rbp), %rdx
+  movq -32(%rbp), %rcx
+  movq -16(%rbp), %r8
+  movq -16(%rbp), %r9
+  call WwCHHS5X0
+  call ZNu7VqUBiH
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  call ZNu7VqUBiH
+  jmp main_lbl6
+
+main_lbl8:
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   jmp main_lbl9
 
-main_lbl8:
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -112(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -120(%rbp), %r8
-  movq %r8, -120(%rbp)
-  movq -120(%rbp), %rax
-  jmp main_epilogue
-
 main_lbl9:
-  movq -24(%rbp), %r8
-  subq -120(%rbp), %r8
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -88(%rbp)
-  movq -112(%rbp), %r8
-  cmpq -88(%rbp), %r8
-  movq $0, %r8
-  setne %r8b
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  movq %r8, -120(%rbp)
   movq -16(%rbp), %r8
-  cmpq -24(%rbp), %r8
-  movq $0, %r8
-  sete %r8b
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  movq %r8, -112(%rbp)
-  movq -16(%rbp), %r8
-  movq %r8, -16(%rbp)
-  movq -120(%rbp), %r8
-  cmpq -112(%rbp), %r8
-  movq $0, %r8
-  setle %r8b
-  movq %r8, -96(%rbp)
-  movq -96(%rbp), %r8
-  movq %r8, -112(%rbp)
-  jmp main_lbl10
+  cmpq $0, %r8
+  jne main_lbl10
+  jmp main_lbl11
 
 main_epilogue:
   movq %rbp, %rsp
