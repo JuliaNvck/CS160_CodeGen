@@ -171,6 +171,7 @@ struct Function {
     std::vector<std::pair<VarId, TypePtr>> params;
     TypePtr rettyp;
     std::map<VarId, TypePtr> locals;
+    std::vector<VarId> locals_order; // Preserve JSON insertion order
     std::map<BbId, BasicBlock> body;
 };
 

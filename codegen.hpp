@@ -20,7 +20,10 @@ private:
     long frame_size_ = 0;                    // total bytes subtracted from %rsp
     long first_root_offset_ = 0;             // e.g. -16(%rbp)
     long num_root_words_ = 0;                // words passed to _cflat_zero_words
+    std::map<LIR::StructId, std::map<LIR::FieldId, long>> struct_field_offsets_;
+    long gc_root_count_ = 0;                 // number of pointer-typed locals/params for GC
 
+    
     // High-level emission
     void emit_data(const LIR::Program& prog);
     void emit_text(const LIR::Program& prog);
@@ -52,7 +55,11 @@ private:
     void emit_cmp(const LIR::Cmp& c);
     void emit_load(const LIR::Load& l);
     void emit_store(const LIR::Store& s);
-    void emit_call(const LIR::Call& call); // skeleton
+    void emit_call(const LIR::Call& call);
+    void emit_gfp(const LIR::Gfp& gfp);
+    void emit_gep(const LIR::Gep& gep);
+    void emit_alloc_single(const LIR::AllocSingle& a);
+    void emit_alloc_array(const LIR::AllocArray& a);
 
     const char* cond_suffix(LIR::RelOp op) const;
 };
