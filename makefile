@@ -8,7 +8,7 @@ LDFLAGS = -fsanitize=address
 CXXFLAGS += -fsanitize=address
 
 # Executable name
-TARGET = main
+TARGET = codegen
 
 # Find all .cpp files in the current directory
 SOURCES = $(wildcard *.cpp)

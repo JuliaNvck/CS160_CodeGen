@@ -44,6 +44,7 @@ void Codegen::emit_text(const Program& prog) {
     out_ << ".invalid_alloc_length:\n";
     out_ << "  lea invalid_alloc_msg(%rip), %rdi\n";
     out_ << "  call _cflat_panic\n";
+    out_ << "        \n";
 }
 
 void Codegen::assign_stack_slots(const Function& fn) {
