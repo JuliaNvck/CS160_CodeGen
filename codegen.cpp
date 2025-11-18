@@ -79,18 +79,26 @@ void Codegen::assign_stack_slots(const Function& fn) {
         offset -= 8;
         num_root_words_ += 1; // treat all locals as GC roots for now
     }
+    
+    // Now allocate stack slots for parameters AFTER locals
+    // Parameters need to be stored on the stack even if passed in registers
+    for (const auto& [pname, ptype] : fn.params) {
+        var_offset_[pname] = offset;
+        offset -= 8;
+    }
 
     first_root_offset_ = -16;
 
-    // words = 1 (GC header) + num_root_words
-    long words = 1 + num_root_words_;
+    // words = 1 (GC header) + num_root_words (locals) + num_params
+    long num_params = fn.params.size();
+    long words = 1 + num_root_words_ + num_params;
     if (words % 2 != 0) {
         words += 1; // padding word if odd number of words
     }
     frame_size_ = words * 8;
 
-    // store for use in emit_prologue
-    first_root_offset_ = min_local_offset;
+    // store for use in emit_prologue (start of locals to zero)
+    first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
 }
 
 void Codegen::emit_prologue(const Function& fn,
@@ -108,6 +116,14 @@ void Codegen::emit_prologue(const Function& fn,
     // GC header at -8(%rbp). For now, just write 0; you can
     // adjust this if your runtime expects something else.
     out_ << "  movq $0, -8(%rbp)\n";
+
+    // Save register-passed parameters to stack
+    // First 6 parameters are passed in: %rdi, %rsi, %rdx, %rcx, %r8, %r9
+    const char* param_regs[] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+    for (size_t i = 0; i < fn.params.size() && i < 6; ++i) {
+        const auto& [pname, ptype] = fn.params[i];
+        out_ << "  movq " << param_regs[i] << ", " << slot(pname) << "\n";
+    }
 
     // Zero root words if any
     if (num_root_words_ > 0) {
