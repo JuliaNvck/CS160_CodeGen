@@ -262,59 +262,6 @@ static Function parse_function(const json& jfn) {
         fn.body.emplace(label, std::move(bb));
     }
 
-    for (auto& [lbl, bb] : fn.body) {
-        for (auto& inst : bb.insts) {
-
-            std::visit([&](auto& op) {
-                using T = std::decay_t<decltype(op)>;
-
-                auto add_local = [&](const VarId& v) {
-                    if (!fn.locals.count(v)) {
-                        // If type unknown or irrelevant, treat as Int
-                        fn.locals[v] = std::make_shared<IntType>();
-                        fn.locals_order.push_back(v);
-                    }
-                    std::cerr << "ADD LOCAL: " << v << "\n";
-
-                };
-                
-                if constexpr (std::is_same_v<T, Const>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Copy>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Arith>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Cmp>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Load>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Gfp>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Gep>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, AllocSingle>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, AllocArray>) {
-                    add_local(op.lhs);
-                }
-                else if constexpr (std::is_same_v<T, Call>) {
-                    if (op.lhs.has_value()) {
-                        add_local(op.lhs.value());
-                    }
-                }
-
-            }, inst);
-        }
-    }
-
     return fn;
 }
 

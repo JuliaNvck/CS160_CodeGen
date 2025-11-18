@@ -245,120 +245,187 @@ void Codegen::emit_text(const Program& prog) {
 //     gc_root_count_ = num_pointer_locals + num_pointer_params;
 // }
 
+// void Codegen::assign_stack_slots(const Function& fn) {
+//     var_offset_.clear();
+//     frame_size_ = 0;
+//     num_root_words_ = 0;
+//     first_root_offset_ = 0;
+
+//     //
+//     // 1. Decide the exact order of locals
+//     //    - all locals are in fn.locals_order in JSON/insertion order
+//     //    - but we group non-_inner* first, then _inner* temps
+//     //
+//     std::vector<std::string> non_inner_vars;
+//     std::vector<std::string> inner_vars;
+
+//     for (const auto& v : fn.locals_order) {
+//         if (v.rfind("_inner", 0) == 0) {        // starts with "_inner"
+//             inner_vars.push_back(v);
+//         } else {
+//             non_inner_vars.push_back(v);
+//         }
+//     }
+
+//     std::vector<std::string> ordered_vars;
+//     ordered_vars.reserve(fn.locals_order.size());
+//     ordered_vars.insert(ordered_vars.end(),
+//                         non_inner_vars.begin(), non_inner_vars.end());
+//     ordered_vars.insert(ordered_vars.end(),
+//                         inner_vars.begin(), inner_vars.end());
+
+//     //
+//     // 2. Assign stack slots for locals, starting at -16(%rbp)
+//     //    (GC header is at -8(%rbp))
+//     //
+//     long offset           = -16;
+//     long min_local_offset = 0;
+//     bool first_local      = true;
+
+//     long num_pointer_locals = 0;   // pointer/array locals that are GC roots
+
+//     for (const auto& v : ordered_vars) {
+//         var_offset_[v] = offset;
+
+//         if (first_local) {
+//             min_local_offset = offset;
+//             first_local      = false;
+//         } else if (offset < min_local_offset) {
+//             min_local_offset = offset;
+//         }
+
+//         // Look up the type for GC info
+//         auto it = fn.locals.find(v);
+//         assert(it != fn.locals.end());
+//         const auto& ty = it->second;
+
+//         // Count pointer/array locals as GC roots, but skip _inner* temps
+//         if ( (dynamic_cast<const PtrType*>(ty.get())  ||
+//               dynamic_cast<const ArrayType*>(ty.get())) &&
+//              v.rfind("_inner", 0) != 0 ) {
+//             ++num_pointer_locals;
+//         }
+
+//         offset -= 8;
+//     }
+
+//     // All locals (not just pointer ones) are zeroed by _cflat_zero_words
+//     num_root_words_ = static_cast<long>(ordered_vars.size());
+
+//     //
+//     // 3. Assign stack slots for parameters
+//     //    - first 6 in registers, spill to negative offsets
+//     //    - the rest live at positive offsets 16(%rbp), 24(%rbp), ...
+//     //
+//     std::size_t num_params     = fn.params.size();
+//     std::size_t num_reg_params = std::min<std::size_t>(6, num_params);
+
+//     long num_pointer_params = 0;
+
+//     // Register-passed params (we give them stack slots below locals)
+//     for (std::size_t i = 0; i < num_reg_params; ++i) {
+//         const auto& [pname, ptype] = fn.params[i];
+//         var_offset_[pname] = offset;
+
+//         if (dynamic_cast<const PtrType*>(ptype.get()) ||
+//             dynamic_cast<const ArrayType*>(ptype.get())) {
+//             ++num_pointer_params;
+//         }
+
+//         offset -= 8;
+//     }
+
+//     // Stack-passed params (7+): already at positive offsets
+//     long stack_param_offset = 16;            // first is 16(%rbp)
+//     for (std::size_t i = 6; i < num_params; ++i) {
+//         const auto& [pname, ptype] = fn.params[i];
+//         (void)ptype;                        // type not needed for layout
+//         var_offset_[pname] = stack_param_offset;
+//         stack_param_offset += 8;
+//     }
+
+//     //
+//     // 4. Compute frame size and GC metadata
+//     //
+//     // GC header word + all locals + reg params
+//     long words = 1 + num_root_words_ + static_cast<long>(num_reg_params);
+//     if (words % 2 != 0) {
+//         ++words;            // keep stack 16-byte aligned
+//     }
+//     frame_size_ = words * 8;
+
+//     // Start zero_words at the most negative local
+//     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
+
+//     // Number of pointer roots for the GC header at -8(%rbp)
+//     gc_root_count_ = num_pointer_locals + num_pointer_params;
+// }
+
 void Codegen::assign_stack_slots(const Function& fn) {
     var_offset_.clear();
     frame_size_ = 0;
     num_root_words_ = 0;
     first_root_offset_ = 0;
 
-    //
-    // 1. Decide the exact order of locals
-    //    - all locals are in fn.locals_order in JSON/insertion order
-    //    - but we group non-_inner* first, then _inner* temps
-    //
-    std::vector<std::string> non_inner_vars;
-    std::vector<std::string> inner_vars;
-
-    for (const auto& v : fn.locals_order) {
-        if (v.rfind("_inner", 0) == 0) {        // starts with "_inner"
-            inner_vars.push_back(v);
-        } else {
-            non_inner_vars.push_back(v);
-        }
+    // Put a GC header at -8(%rbp) and locals below that
+    // Collect locals into a deterministic order
+    std::vector<std::string> vars;
+    vars.reserve(fn.locals.size());
+    for (const auto& [v, _] : fn.locals) {
+        vars.push_back(v);
     }
+    std::sort(vars.begin(), vars.end());
 
-    std::vector<std::string> ordered_vars;
-    ordered_vars.reserve(fn.locals_order.size());
-    ordered_vars.insert(ordered_vars.end(),
-                        non_inner_vars.begin(), non_inner_vars.end());
-    ordered_vars.insert(ordered_vars.end(),
-                        inner_vars.begin(), inner_vars.end());
+    long offset = -16; // first local after GC header (-8)
+    long min_local_offset = 0; // track most negative
 
-    //
-    // 2. Assign stack slots for locals, starting at -16(%rbp)
-    //    (GC header is at -8(%rbp))
-    //
-    long offset           = -16;
-    long min_local_offset = 0;
-    bool first_local      = true;
-
-    long num_pointer_locals = 0;   // pointer/array locals that are GC roots
-
-    for (const auto& v : ordered_vars) {
+    for (const auto& v : vars) {
         var_offset_[v] = offset;
 
-        if (first_local) {
+        // update min_local_offset
+        if (num_root_words_ == 0) {
+        // first local
             min_local_offset = offset;
-            first_local      = false;
         } else if (offset < min_local_offset) {
             min_local_offset = offset;
         }
 
-        // Look up the type for GC info
-        auto it = fn.locals.find(v);
-        assert(it != fn.locals.end());
-        const auto& ty = it->second;
-
-        // Count pointer/array locals as GC roots, but skip _inner* temps
-        if ( (dynamic_cast<const PtrType*>(ty.get())  ||
-              dynamic_cast<const ArrayType*>(ty.get())) &&
-             v.rfind("_inner", 0) != 0 ) {
-            ++num_pointer_locals;
-        }
-
         offset -= 8;
+        num_root_words_ += 1; // treat all locals as GC roots for now
     }
 
-    // All locals (not just pointer ones) are zeroed by _cflat_zero_words
-    num_root_words_ = static_cast<long>(ordered_vars.size());
-
-    //
-    // 3. Assign stack slots for parameters
-    //    - first 6 in registers, spill to negative offsets
-    //    - the rest live at positive offsets 16(%rbp), 24(%rbp), ...
-    //
-    std::size_t num_params     = fn.params.size();
-    std::size_t num_reg_params = std::min<std::size_t>(6, num_params);
-
-    long num_pointer_params = 0;
-
-    // Register-passed params (we give them stack slots below locals)
+    // Now allocate stack slots for parameters
+    // First 6 params are passed in registers and need stack slots (negative offsets)
+    // Params 7+ are on the stack already (positive offsets from %rbp)
+    std::size_t num_params = fn.params.size();
+    std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
+    
+    // Allocate slots for first 6 params (passed in registers)
     for (std::size_t i = 0; i < num_reg_params; ++i) {
         const auto& [pname, ptype] = fn.params[i];
         var_offset_[pname] = offset;
-
-        if (dynamic_cast<const PtrType*>(ptype.get()) ||
-            dynamic_cast<const ArrayType*>(ptype.get())) {
-            ++num_pointer_params;
-        }
-
         offset -= 8;
     }
-
-    // Stack-passed params (7+): already at positive offsets
-    long stack_param_offset = 16;            // first is 16(%rbp)
+    
+    // Params 7+ are on the stack at positive offsets: 16(%rbp), 24(%rbp), etc.
+    long stack_param_offset = 16; // first stack param is at 16(%rbp)
     for (std::size_t i = 6; i < num_params; ++i) {
         const auto& [pname, ptype] = fn.params[i];
-        (void)ptype;                        // type not needed for layout
         var_offset_[pname] = stack_param_offset;
         stack_param_offset += 8;
     }
 
-    //
-    // 4. Compute frame size and GC metadata
-    //
-    // GC header word + all locals + reg params
-    long words = 1 + num_root_words_ + static_cast<long>(num_reg_params);
+    first_root_offset_ = -16;
+
+    // words = 1 (GC header) + num_root_words (locals) + num_reg_params (first 6 params)
+    long words = 1 + num_root_words_ + num_reg_params;
     if (words % 2 != 0) {
-        ++words;            // keep stack 16-byte aligned
+        words += 1; // padding word if odd number of words
     }
     frame_size_ = words * 8;
 
-    // Start zero_words at the most negative local
+    // store for use in emit_prologue (start of locals to zero)
     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
-
-    // Number of pointer roots for the GC header at -8(%rbp)
-    gc_root_count_ = num_pointer_locals + num_pointer_params;
 }
 
 
