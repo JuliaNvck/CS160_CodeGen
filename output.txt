@@ -3,6 +3,7 @@
 .globl __NULL
 __NULL: .zero 8
 
+
 out_of_bounds_msg: .string "out-of-bounds array access"
 invalid_alloc_msg: .string "invalid allocation amount"
 
@@ -15,7 +16,7 @@ main:
   subq $624, %rsp
   movq $0, -8(%rbp)
   movq %rbp, %rdi
-  addq $-16, %rdi
+  addq $-616, %rdi
   movq $76, %rsi
   call _cflat_zero_words
   call _cflat_init_gc
@@ -103,6 +104,8 @@ main_lbl1:
   jmp main_lbl4
 
 main_lbl10:
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -24(%rbp), %r8
@@ -115,20 +118,19 @@ main_lbl10:
   jmp main_lbl13
 
 main_lbl100:
-  movq -616(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -592(%rbp)
   movq -32(%rbp), %r8
-  movq -592(%rbp), %r10
-  subq %r10, %r8
+  subq -592(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -139,13 +141,11 @@ main_lbl100:
   jmp main_lbl102
 
 main_lbl101:
-  movq -400(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -400(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
@@ -154,26 +154,21 @@ main_lbl101:
   movq %r8, -16(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -24(%rbp), %r8
-  movq -608(%rbp), %r10
-  subq %r10, %r8
+  subq -608(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -24(%rbp), %r8
-  movq -592(%rbp), %r10
-  subq %r10, %r8
+  subq -592(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
@@ -201,13 +196,11 @@ main_lbl104:
   movq %r8, -24(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
   jmp main_lbl103
@@ -238,23 +231,21 @@ main_lbl107:
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
@@ -277,26 +268,26 @@ main_lbl11:
   jmp main_lbl12
 
 main_lbl110:
-  movq -16(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -520(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -160(%rbp), %rax
@@ -307,8 +298,7 @@ main_lbl111:
 
 main_lbl112:
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -326,38 +316,33 @@ main_lbl112:
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
-  movq -24(%rbp), %r10
-  addq %r10, %r8
+  addq -24(%rbp), %r8
   movq %r8, -608(%rbp)
-  movq -56(%rbp), %rax
-  movq -608(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -56(%rbp), %r8
+  cmpq -608(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
-  movq -24(%rbp), %r10
-  addq %r10, %r8
+  addq -24(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -16(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
   jmp main_lbl114
@@ -376,9 +361,10 @@ main_lbl115:
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
@@ -389,12 +375,13 @@ main_lbl116:
   movq -144(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -344(%rbp), %r8
-  movq -304(%rbp), %r10
-  subq %r10, %r8
+  subq -304(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -434,6 +421,8 @@ main_lbl121:
 main_lbl122:
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   movq -24(%rbp), %rax
   jmp main_epilogue
 
@@ -444,17 +433,17 @@ main_lbl123:
   jmp main_lbl125
 
 main_lbl124:
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -136(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
@@ -474,28 +463,25 @@ main_lbl125:
 main_lbl126:
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -16(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %r8
-  movq %r8, -616(%rbp)
-  movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
-  movq %r8, -608(%rbp)
-  movq -32(%rbp), %r8
-  movq -608(%rbp), %r10
-  subq %r10, %r8
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
+  movq %r8, -608(%rbp)
+  movq -32(%rbp), %r8
+  subq -608(%rbp), %r8
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -32(%rbp), %r8
+  subq -24(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -514,13 +500,11 @@ main_lbl127:
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   jmp main_lbl128
@@ -535,13 +519,11 @@ main_lbl129:
   jmp main_lbl131
 
 main_lbl13:
-  movq -528(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -528(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -600(%rbp)
   jmp main_lbl14
@@ -554,8 +536,9 @@ main_lbl130:
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -16(%rbp), %r8
-  movq -104(%rbp), %r10
-  imulq %r10, %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  imulq -104(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -571,11 +554,14 @@ main_lbl132:
   jmp main_lbl134
 
 main_lbl133:
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -24(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -584,28 +570,26 @@ main_lbl133:
   jmp main_lbl132
 
 main_lbl134:
-  movq -616(%rbp), %rax
-  movq -320(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -320(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl135
   jmp main_lbl136
 
 main_lbl135:
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl138
@@ -616,8 +600,7 @@ main_lbl136:
 
 main_lbl137:
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -636,18 +619,17 @@ main_lbl139:
 main_lbl14:
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -32(%rbp), %r8
-  movq -592(%rbp), %r10
-  subq %r10, %r8
+  subq -592(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -616(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -16(%rbp), %rax
   jmp main_epilogue
@@ -655,29 +637,30 @@ main_lbl14:
 main_lbl140:
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -24(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl141
   jmp main_lbl142
 
 main_lbl141:
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -32(%rbp), %r8
-  movq -608(%rbp), %r10
-  subq %r10, %r8
+  subq -608(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -688,49 +671,49 @@ main_lbl141:
 
 main_lbl142:
   movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -88(%rbp), %r8
   movq %r8, -616(%rbp)
-  movq -616(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -568(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -568(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
   jmp main_lbl143
 
 main_lbl143:
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   jmp main_lbl137
 
 main_lbl144:
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -592(%rbp)
   jmp main_lbl146
@@ -772,8 +755,7 @@ main_lbl149:
 
 main_lbl15:
   movq -16(%rbp), %r8
-  movq -616(%rbp), %r10
-  imulq %r10, %r8
+  imulq -616(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
@@ -782,8 +764,7 @@ main_lbl15:
 
 main_lbl150:
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -592(%rbp)
@@ -794,20 +775,16 @@ main_lbl151:
   movq %r8, -24(%rbp)
   movq -328(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -16(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -24(%rbp), %r8
@@ -828,45 +805,42 @@ main_lbl153:
   jmp main_lbl147
 
 main_lbl154:
-  movq -616(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
-  movq -608(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -608(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl155
   jmp main_lbl156
 
 main_lbl155:
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   jmp main_lbl154
 
 main_lbl156:
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -877,22 +851,20 @@ main_lbl156:
   jmp main_lbl137
 
 main_lbl16:
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -24(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -16(%rbp), %r8
@@ -908,36 +880,35 @@ main_lbl17:
 main_lbl18:
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   jmp main_lbl20
 
 main_lbl19:
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -40(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -40(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -24(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -965,19 +936,15 @@ main_lbl22:
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -600(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -600(%rbp), %r8
-  movq -592(%rbp), %r10
-  addq %r10, %r8
+  addq -592(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   cmpq $0, %r8
@@ -990,34 +957,29 @@ main_lbl23:
   movq -464(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -608(%rbp)
-  movq -608(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -488(%rbp), %rax
-  movq -592(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -488(%rbp), %r8
+  cmpq -592(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -24(%rbp), %rax
@@ -1069,19 +1031,19 @@ main_lbl30:
   movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
@@ -1104,20 +1066,16 @@ main_lbl32:
   jmp main_lbl33
 
 main_lbl33:
-  movq -16(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -608(%rbp), %rax
-  movq -592(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -592(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -592(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl30
@@ -1134,6 +1092,10 @@ main_lbl35:
   jmp main_lbl29
 
 main_lbl36:
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
   jmp main_lbl38
@@ -1147,33 +1109,27 @@ main_lbl38:
   jmp main_lbl39
 
 main_lbl39:
-  movq -24(%rbp), %rax
-  movq -64(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -64(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl40
   jmp main_lbl41
 
 main_lbl4:
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl5
@@ -1224,18 +1180,15 @@ main_lbl44:
   movq %r8, -616(%rbp)
   movq -96(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
-  movq -616(%rbp), %r10
-  imulq %r10, %r8
+  imulq -616(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -1244,13 +1197,11 @@ main_lbl44:
   jmp main_lbl39
 
 main_lbl45:
-  movq -280(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -280(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -184(%rbp), %r8
@@ -1259,33 +1210,28 @@ main_lbl45:
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -600(%rbp), %r8
-  movq -608(%rbp), %r10
-  imulq %r10, %r8
+  imulq -608(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   jmp main_lbl47
 
 main_lbl46:
@@ -1296,8 +1242,7 @@ main_lbl47:
 
 main_lbl48:
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -24(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
@@ -1305,31 +1250,25 @@ main_lbl48:
   jmp main_lbl50
 
 main_lbl49:
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -616(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -592(%rbp)
-  movq -616(%rbp), %rax
-  movq -592(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -592(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -1339,15 +1278,15 @@ main_lbl49:
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -504(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl51
@@ -1363,8 +1302,7 @@ main_lbl50:
 
 main_lbl51:
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -592(%rbp), %rax
   movq -152(%rbp), %r8
@@ -1388,21 +1326,19 @@ main_lbl52:
 main_lbl53:
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -592(%rbp)
   movq -16(%rbp), %r8
-  movq -592(%rbp), %r10
-  addq %r10, %r8
+  addq -592(%rbp), %r8
   movq %r8, -608(%rbp)
-  movq -608(%rbp), %rax
-  movq -48(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -48(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %rax
   jmp main_epilogue
 
@@ -1431,13 +1367,11 @@ main_lbl57:
 main_lbl58:
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -16(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl60
@@ -1457,33 +1391,29 @@ main_lbl6:
   jmp main_lbl21
 
 main_lbl60:
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -16(%rbp), %rax
-  movq -592(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setge %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -592(%rbp), %r8
+  movq $0, %r8
+  setge %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -312(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -312(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
@@ -1500,13 +1430,11 @@ main_lbl62:
   jmp main_lbl67
 
 main_lbl63:
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
@@ -1523,32 +1451,26 @@ main_lbl64:
   jmp main_lbl65
 
 main_lbl65:
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
   jmp main_lbl57
 
 main_lbl66:
-  movq -616(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -592(%rbp)
   jmp main_lbl68
@@ -1571,19 +1493,19 @@ main_lbl69:
   jmp main_lbl76
 
 main_lbl7:
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl8
   jmp main_lbl9
 
 main_lbl70:
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
   jmp main_lbl85
 
 main_lbl71:
@@ -1591,23 +1513,22 @@ main_lbl71:
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
-  movq -72(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -72(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -216(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   jmp main_lbl3
 
 main_lbl72:
   movq -24(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -592(%rbp)
@@ -1620,8 +1541,7 @@ main_lbl73:
 
 main_lbl74:
   movq -16(%rbp), %r8
-  movq -592(%rbp), %r10
-  imulq %r10, %r8
+  imulq -592(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   cmpq $0, %r8
@@ -1633,13 +1553,13 @@ main_lbl75:
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
@@ -1656,16 +1576,18 @@ main_lbl76:
   movq %r8, -16(%rbp)
   movq -336(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -1686,13 +1608,11 @@ main_lbl78:
 main_lbl79:
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -24(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -24(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
@@ -1707,16 +1627,13 @@ main_lbl8:
   movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -616(%rbp)
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -592(%rbp)
   movq -32(%rbp), %r8
-  movq -592(%rbp), %r10
-  subq %r10, %r8
+  subq -592(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -1735,21 +1652,17 @@ main_lbl80:
 
 main_lbl81:
   movq -32(%rbp), %r8
-  movq -600(%rbp), %r10
-  subq %r10, %r8
+  subq -600(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
   movq -616(%rbp), %r8
-  movq -608(%rbp), %r10
-  imulq %r10, %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
+  movq -616(%rbp), %r8
+  imulq -608(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
@@ -1763,47 +1676,37 @@ main_lbl82:
 
 main_lbl83:
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -24(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -80(%rbp), %r8
   movq %r8, -24(%rbp)
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -600(%rbp)
-  movq -24(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setge %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
-  movq -608(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setne %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
-  movq -600(%rbp), %rax
-  movq -592(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setge %r8b
+  movq %r8, -608(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setne %r8b
+  movq %r8, -592(%rbp)
+  movq -600(%rbp), %r8
+  cmpq -592(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -616(%rbp), %rax
-  movq -376(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -376(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -16(%rbp), %r8
@@ -1818,19 +1721,15 @@ main_lbl84:
   movq -24(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -592(%rbp)
-  movq -592(%rbp), %rax
-  movq -616(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setg %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -592(%rbp), %r8
+  cmpq -616(%rbp), %r8
+  movq $0, %r8
+  setg %r8b
+  movq %r8, -600(%rbp)
   movq -32(%rbp), %r8
-  movq -600(%rbp), %r10
-  subq %r10, %r8
+  subq -600(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -1843,9 +1742,13 @@ main_lbl85:
   jmp main_lbl87
 
 main_lbl86:
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -240(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -16(%rbp)
@@ -1864,21 +1767,22 @@ main_lbl88:
 
 main_lbl89:
   movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -16(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -296(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -24(%rbp), %rax
-  movq -456(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -456(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -32(%rbp), %r8
-  movq -616(%rbp), %r10
-  subq %r10, %r8
+  subq -616(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -24(%rbp)
@@ -1886,8 +1790,7 @@ main_lbl89:
 
 main_lbl9:
   movq -32(%rbp), %r8
-  movq -16(%rbp), %r10
-  subq %r10, %r8
+  subq -16(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   cmpq $0, %r8
@@ -1898,50 +1801,46 @@ main_lbl90:
   jmp main_lbl91
 
 main_lbl91:
-  movq -496(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -496(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   cmpq $0, %r8
   jne main_lbl92
   jmp main_lbl93
 
 main_lbl92:
-  movq -552(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
-  movq -608(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -552(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -608(%rbp)
+  movq -608(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -616(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -24(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -16(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -16(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -616(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   jmp main_lbl91
 
 main_lbl93:
@@ -1950,44 +1849,42 @@ main_lbl93:
   jmp main_lbl71
 
 main_lbl94:
-  movq -616(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setle %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setle %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
   movq -192(%rbp), %r8
   movq %r8, -24(%rbp)
+  movq -24(%rbp), %r8
+  movq %r8, -24(%rbp)
   movq -616(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -536(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
+  movq -616(%rbp), %r8
+  movq %r8, -616(%rbp)
+  movq -536(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
   movq -600(%rbp), %r8
   movq %r8, -16(%rbp)
-  movq -24(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -600(%rbp)
-  movq -600(%rbp), %rax
-  movq -32(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  sete %al
-  movzbq %al, %rax
-  movq %rax, -608(%rbp)
+  movq -24(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -600(%rbp)
+  movq -600(%rbp), %r8
+  cmpq -32(%rbp), %r8
+  movq $0, %r8
+  sete %r8b
+  movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   movq %r8, -616(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
   jmp main_lbl96
 
 main_lbl95:
@@ -2001,13 +1898,13 @@ main_lbl96:
   movq %r8, -16(%rbp)
   movq -16(%rbp), %r8
   movq %r8, -24(%rbp)
-  movq -616(%rbp), %rax
-  movq -16(%rbp), %r10
-  cmpq %r10, %rax
-  movq $0, %rax
-  setl %al
-  movzbq %al, %rax
-  movq %rax, -592(%rbp)
+  movq -16(%rbp), %r8
+  movq %r8, -16(%rbp)
+  movq -616(%rbp), %r8
+  cmpq -16(%rbp), %r8
+  movq $0, %r8
+  setl %r8b
+  movq %r8, -592(%rbp)
   movq -592(%rbp), %r8
   movq %r8, -616(%rbp)
   movq -16(%rbp), %rax
@@ -2015,8 +1912,7 @@ main_lbl96:
 
 main_lbl97:
   movq -32(%rbp), %r8
-  movq -24(%rbp), %r10
-  subq %r10, %r8
+  subq -24(%rbp), %r8
   movq %r8, -600(%rbp)
   movq -16(%rbp), %rax
   movq -600(%rbp), %r8
@@ -2029,8 +1925,7 @@ main_lbl97:
   idivq %r8
   movq %rax, -592(%rbp)
   movq -32(%rbp), %r8
-  movq -592(%rbp), %r10
-  subq %r10, %r8
+  subq -592(%rbp), %r8
   movq %r8, -608(%rbp)
   movq -608(%rbp), %r8
   cmpq $0, %r8

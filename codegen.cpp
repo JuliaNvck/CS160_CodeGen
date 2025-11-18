@@ -21,7 +21,7 @@ void Codegen::emit_data(const Program& prog) {
     }
 
     out_ << ".globl __NULL\n";
-    out_ << "__NULL: .zero 8\n\n";
+    out_ << "__NULL: .zero 8\n\n\n";
 
     out_ << "out_of_bounds_msg: .string \"out-of-bounds array access\"\n";
     out_ << "invalid_alloc_msg: .string \"invalid allocation amount\"\n\n";
@@ -62,9 +62,19 @@ void Codegen::assign_stack_slots(const Function& fn) {
     std::sort(vars.begin(), vars.end());
 
     long offset = -16; // first local after GC header (-8)
+    long min_local_offset = 0; // track most negative
 
     for (const auto& v : vars) {
         var_offset_[v] = offset;
+
+        // update min_local_offset
+        if (num_root_words_ == 0) {
+            // first local
+            min_local_offset = offset;
+        } else if (offset < min_local_offset) {
+            min_local_offset = offset;
+        }
+
         offset -= 8;
         num_root_words_ += 1; // treat all locals as GC roots for now
     }
@@ -77,6 +87,9 @@ void Codegen::assign_stack_slots(const Function& fn) {
         words += 1; // padding word if odd number of words
     }
     frame_size_ = words * 8;
+
+    // store for use in emit_prologue
+    first_root_offset_ = min_local_offset;
 }
 
 void Codegen::emit_prologue(const Function& fn,
@@ -215,46 +228,41 @@ void Codegen::emit_const(const Const& c) {
 }
 
 void Codegen::emit_copy(const Copy& c) {
-    if (c.lhs == c.op) return;
+    // if (c.lhs == c.op) return;
     out_ << "  movq " << slot(c.op) << ", %r8\n";
     out_ << "  movq %r8, " << slot(c.lhs) << "\n";
 }
 
 void Codegen::emit_arith(const Arith& a) {
+    if (a.aop == ArithOp::Div) {
+        out_ << "  movq " << slot(a.left) << ", %rax\n"; // Load the dividend into %rax
+        out_ << "  movq " << slot(a.right) << ", %r8\n"; // Load the divisor into %r8
+        out_ << "  cmpq $0, %r8\n"; // Compare divisor with 0
+        out_ << "  movq $1, %r9\n";
+        out_ << "  cmoveq %r9, %r8\n"; // If previous comparison was equal (%r8 == 0), move 1 into %r8 to avoid division by zero
+        out_ << "  movq $0, %r9\n";
+        out_ << "  cmoveq %r9, %rax\n"; // If divisor was 0, then copy 0 into %rax
+        out_ << "  cqo\n"; // sign-extend %rax into %rdx, treats %rax as a 64-bit signed integer and fills %rdx with its sign bit   
+        out_ << "  idivq %r8\n"; // signed division, quotient in %rax, %rdx = remainder
+        out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+        return;
+    }
+    // non-division arithmetic: use %r8 and memory operand for rhs
+    out_ << "  movq " << slot(a.left) << ", %r8\n";
     switch (a.aop) {
         case ArithOp::Add:
-            out_ << "  movq " << slot(a.left) << ", %r8\n";
-            out_ << "  movq " << slot(a.right) << ", %r10\n";
-            out_ << "  addq %r10, %r8\n";
-            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
+            out_ << "  addq " << slot(a.right) << ", %r8\n";
             break;
         case ArithOp::Sub:
-            out_ << "  movq " << slot(a.left) << ", %r8\n";
-            out_ << "  movq " << slot(a.right) << ", %r10\n";
-            out_ << "  subq %r10, %r8\n";
-            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
+            out_ << "  subq " << slot(a.right) << ", %r8\n";
             break;
         case ArithOp::Mul:
-            out_ << "  movq " << slot(a.left) << ", %r8\n";
-            out_ << "  movq " << slot(a.right) << ", %r10\n";
-            out_ << "  imulq %r10, %r8\n";
-            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
+            out_ << "  imulq " << slot(a.right) << ", %r8\n";
             break;
-        case ArithOp::Div:
-            // Very rough: you should handle sign-extension and
-            // %rdx, etc, according to your spec.
-            out_ << "  movq " << slot(a.left) << ", %rax\n"; // Load the dividend into %rax
-            out_ << "  movq " << slot(a.right) << ", %r8\n"; // Load the divisor into %r8
-            out_ << "  cmpq $0, %r8\n"; // Compare divisor with 0
-            out_ << "  movq $1, %r9\n";
-            out_ << "  cmoveq %r9, %r8\n"; // If previous comparison was equal (%r8 == 0), move 1 into %r8 to avoid division by zero
-            out_ << "  movq $0, %r9\n";
-            out_ << "  cmoveq %r9, %rax\n"; // If divisor was 0, then copy 0 into %rax
-            out_ << "  cqo\n"; // sign-extend %rax into %rdx, treats %rax as a 64-bit signed integer and fills %rdx with its sign bit   
-            out_ << "  idivq %r8\n"; // signed division, quotient in %rax, %rdx = remainder
-            out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+        default:
             break;
     }
+    out_ << "  movq %r8, " << slot(a.lhs) << "\n";
 }
 
 const char* Codegen::cond_suffix(RelOp op) const {
@@ -270,13 +278,11 @@ const char* Codegen::cond_suffix(RelOp op) const {
 }
 
 void Codegen::emit_cmp(const Cmp& c) {
-    out_ << "  movq " << slot(c.left) << ", %rax\n";
-    out_ << "  movq " << slot(c.right) << ", %r10\n";
-    out_ << "  cmpq %r10, %rax\n";
-    out_ << "  movq $0, %rax\n";
-    out_ << "  set" << cond_suffix(c.rop) << " %al\n";
-    out_ << "  movzbq %al, %rax\n";
-    out_ << "  movq %rax, " << slot(c.lhs) << "\n";
+    out_ << "  movq " << slot(c.left) << ", %r8\n"; // lhs in %r8
+    out_ << "  cmpq " << slot(c.right) << ", %r8\n"; // compare rhs (memory) against %r8
+    out_ << "  movq $0, %r8\n"; // zero full %r8
+    out_ << "  set" << cond_suffix(c.rop) << " %r8b\n"; // set condition into low byte of %r8
+    out_ << "  movq %r8, " << slot(c.lhs) << "\n"; // store boolean (0/1) into dest
 }
 
 void Codegen::emit_load(const Load& l) {
