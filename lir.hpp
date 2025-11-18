@@ -144,8 +144,8 @@ struct Load { VarId lhs; VarId src; };
 struct Store { VarId dst; VarId op; };
 struct Gfp { VarId lhs; VarId src; StructId sid; FieldId field; }; // GetFieldPtr
 struct Gep { VarId lhs; VarId src; VarId idx; bool checked; };     // GetElementPtr
-struct AllocSingle { VarId lhs; TypePtr typ; }; // Changed to use LIR::Type
-struct AllocArray { VarId lhs; VarId amt; TypePtr typ; }; // Changed to use LIR::Type
+struct AllocSingle { VarId lhs; TypePtr typ; };
+struct AllocArray { VarId lhs; VarId amt; TypePtr typ; };
 struct Call { std::optional<VarId> lhs; VarId callee; std::vector<VarId> args; };
 
 using Inst = std::variant<

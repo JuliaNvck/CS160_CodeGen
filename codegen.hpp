@@ -10,7 +10,6 @@ public:
     explicit Codegen(std::ostream& out)
         : out_(out) {}
 
-    // Top-level entry: emit whole program
     void emit_program(const LIR::Program& prog);
 
 private:

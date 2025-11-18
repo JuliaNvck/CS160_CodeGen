@@ -1,8 +1,10 @@
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
+#include <memory>
 #include "json.hpp"
 #include "lir.hpp"
-#include "codegen.hpp"    // from the codegen skeleton we discussed
+#include "codegen.hpp"
 
 using nlohmann::json;
 using namespace LIR;
@@ -316,14 +318,32 @@ static Program parse_program(const json& j) {
 
 // ============= main =============
 
-int main() {
-    try {
-        json j;
-        std::cin >> j;
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <file.astj>\n";
+        return 1;
+    }
+    
+    // 1. Open and read the input file
+    std::ifstream input_file(argv[1]);
+    if (!input_file.is_open()) {
+        std::cerr << "Error: Could not open file " << argv[1] << "\n";
+        return 1;
+    }
 
+    json j;
+
+    try {
+        j = nlohmann::json::parse(input_file);
+    } catch (nlohmann::json::parse_error& e) {
+        std::cerr << "Error: Failed to parse JSON.\n" << e.what() << std::endl;
+        return 1;
+    }
+
+    try {
         Program prog = parse_program(j);
 
-        Codegen cg(std::cout);  // from your codegen pass
+        Codegen cg(std::cout);  // codegen pass
         cg.emit_program(prog);
     } catch (const std::exception& ex) {
         std::cerr << "codegen error: " << ex.what() << "\n";

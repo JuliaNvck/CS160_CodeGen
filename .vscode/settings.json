@@ -56,7 +56,8 @@
         "forward_list": "cpp",
         "map": "cpp",
         "span": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "list": "cpp"
     },
     // Ensure VS Code IntelliSense parses with C++17 features
     "C_Cpp.default.cppStandard": "c++17"

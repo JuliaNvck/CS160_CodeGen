@@ -52,8 +52,8 @@ void Codegen::assign_stack_slots(const Function& fn) {
     num_root_words_ = 0;
     first_root_offset_ = 0;
 
-    // We will put a GC header at -8(%rbp), and then locals below that.
-    // Collect locals into a deterministic order.
+    // Put a GC header at -8(%rbp) and locals below that
+    // Collect locals into a deterministic order
     std::vector<std::string> vars;
     vars.reserve(fn.locals.size());
     for (const auto& [v, _] : fn.locals) {
@@ -74,7 +74,7 @@ void Codegen::assign_stack_slots(const Function& fn) {
     // words = 1 (GC header) + num_root_words
     long words = 1 + num_root_words_;
     if (words % 2 != 0) {
-        words += 1; // padding word
+        words += 1; // padding word if odd number of words
     }
     frame_size_ = words * 8;
 }
@@ -163,7 +163,7 @@ void Codegen::emit_basic_block(const Function&,
 void Codegen::emit_inst(const Inst& inst,
                         const std::string& /*fn_name*/) {
     std::visit([this](auto&& arg) {
-        using T = std::decay_t<decltype(arg)>;
+        using T = std::decay_t<decltype(arg)>; // detect which concrete instruction type arg is
         if constexpr (std::is_same_v<T, Const>) {
             emit_const(arg);
         } else if constexpr (std::is_same_v<T, Copy>) {
@@ -188,13 +188,13 @@ void Codegen::emit_inst(const Inst& inst,
 void Codegen::emit_terminal(const Terminal& term,
                             const std::string& fn_name) {
     std::visit([this, &fn_name](auto&& arg) {
-        using T = std::decay_t<decltype(arg)>;
+        using T = std::decay_t<decltype(arg)>; // detect which concrete terminal type arg is
         if constexpr (std::is_same_v<T, Jump>) {
             out_ << "  jmp " << asm_label(fn_name, arg.target) << "\n";
         } else if constexpr (std::is_same_v<T, Branch>) {
             // if guard != 0 → tt else ff
-            out_ << "  movq " << slot(arg.guard) << ", %rax\n";
-            out_ << "  cmpq $0, %rax\n";
+            out_ << "  movq " << slot(arg.guard) << ", %r8\n";
+            out_ << "  cmpq $0, %r8\n";
             out_ << "  jne " << asm_label(fn_name, arg.tt) << "\n";
             out_ << "  jmp " << asm_label(fn_name, arg.ff) << "\n";
         } else if constexpr (std::is_same_v<T, Ret>) {
@@ -216,31 +216,45 @@ void Codegen::emit_const(const Const& c) {
 
 void Codegen::emit_copy(const Copy& c) {
     if (c.lhs == c.op) return;
-    out_ << "  movq " << slot(c.op) << ", %rax\n";
-    out_ << "  movq %rax, " << slot(c.lhs) << "\n";
+    out_ << "  movq " << slot(c.op) << ", %r8\n";
+    out_ << "  movq %r8, " << slot(c.lhs) << "\n";
 }
 
 void Codegen::emit_arith(const Arith& a) {
-    out_ << "  movq " << slot(a.left) << ", %rax\n";
-    out_ << "  movq " << slot(a.right) << ", %r10\n";
     switch (a.aop) {
         case ArithOp::Add:
-            out_ << "  addq %r10, %rax\n";
+            out_ << "  movq " << slot(a.left) << ", %r8\n";
+            out_ << "  movq " << slot(a.right) << ", %r10\n";
+            out_ << "  addq %r10, %r8\n";
+            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
             break;
         case ArithOp::Sub:
-            out_ << "  subq %r10, %rax\n";
+            out_ << "  movq " << slot(a.left) << ", %r8\n";
+            out_ << "  movq " << slot(a.right) << ", %r10\n";
+            out_ << "  subq %r10, %r8\n";
+            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
             break;
         case ArithOp::Mul:
-            out_ << "  imulq %r10, %rax\n";
+            out_ << "  movq " << slot(a.left) << ", %r8\n";
+            out_ << "  movq " << slot(a.right) << ", %r10\n";
+            out_ << "  imulq %r10, %r8\n";
+            out_ << "  movq %r8, " << slot(a.lhs) << "\n";
             break;
         case ArithOp::Div:
             // Very rough: you should handle sign-extension and
             // %rdx, etc, according to your spec.
-            out_ << "  cqto\n"; // sign-extend %rax into %rdx
-            out_ << "  idivq %r10\n"; // quotient in %rax
+            out_ << "  movq " << slot(a.left) << ", %rax\n"; // Load the dividend into %rax
+            out_ << "  movq " << slot(a.right) << ", %r8\n"; // Load the divisor into %r8
+            out_ << "  cmpq $0, %r8\n"; // Compare divisor with 0
+            out_ << "  movq $1, %r9\n";
+            out_ << "  cmoveq %r9, %r8\n"; // If previous comparison was equal (%r8 == 0), move 1 into %r8 to avoid division by zero
+            out_ << "  movq $0, %r9\n";
+            out_ << "  cmoveq %r9, %rax\n"; // If divisor was 0, then copy 0 into %rax
+            out_ << "  cqo\n"; // sign-extend %rax into %rdx, treats %rax as a 64-bit signed integer and fills %rdx with its sign bit   
+            out_ << "  idivq %r8\n"; // signed division, quotient in %rax, %rdx = remainder
+            out_ << "  movq %rax, " << slot(a.lhs) << "\n";
             break;
     }
-    out_ << "  movq %rax, " << slot(a.lhs) << "\n";
 }
 
 const char* Codegen::cond_suffix(RelOp op) const {
@@ -279,7 +293,7 @@ void Codegen::emit_store(const Store& s) {
 
 void Codegen::emit_call(const Call& call) {
     // Skeleton for <= 6 int arguments.
-    // Args are in call.args (reverse order already applied in Lowerer).
+    // Args are in call.args
     // You must:
     //   - move up to 6 into %rdi, %rsi, %rdx, %rcx, %r8, %r9
     //   - push extras in reverse order
