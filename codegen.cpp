@@ -5,15 +5,43 @@
 
 using namespace LIR;
 
-void Codegen::emit_program(const Program& prog) {
+// void Codegen::emit_program(const Program& prog) {
+//     struct_field_offsets_.clear();
+
+//     for (const auto& [sid, s] : prog.structs) {
+//         long offset = 0;
+//         for (const auto& [fname, ftype] : s.fields) {
+//             struct_field_offsets_[sid][fname] = offset;
+//             offset += 8; // assume each field is 8 bytes
+//         }
+//     }
+    
+//     emit_data(prog);
+//     emit_text(prog);
+// }
+
+void Codegen::emit_program(const LIR::Program& prog) {
     struct_field_offsets_.clear();
+    struct_bitmaps_.clear();
+
     for (const auto& [sid, s] : prog.structs) {
         long offset = 0;
+        std::size_t idx = 0;
+        uint64_t bitmap = 0;
+
         for (const auto& [fname, ftype] : s.fields) {
             struct_field_offsets_[sid][fname] = offset;
-            offset += 8; // assume each field is 8 bytes
+            offset += 8;
+
+            if (is_gc_pointer_type(ftype)) {
+                bitmap |= (1ull << idx);   // field idx is a pointer
+            }
+            ++idx;
         }
+
+        struct_bitmaps_[sid] = bitmap;
     }
+
     emit_data(prog);
     emit_text(prog);
 }
@@ -55,377 +83,119 @@ void Codegen::emit_text(const Program& prog) {
     out_ << "        \n";
 }
 
-// void Codegen::assign_stack_slots(const Function& fn) {
-//     var_offset_.clear();
-//     frame_size_ = 0;
-//     num_root_words_ = 0;
-//     first_root_offset_ = 0;
-
-//     // Put a GC header at -8(%rbp) and locals below that
-//     // Allocate non-_inner* variables first (in JSON order), then _inner* variables
-//     // This matches the reference implementation's ordering
-//     std::vector<std::string> non_inner_vars;
-//     std::vector<std::string> inner_vars;
-    
-//     for (const auto& v : fn.locals_order) {
-//         if (v.find("_inner") == 0) {
-//             inner_vars.push_back(v);
-//         } else {
-//             non_inner_vars.push_back(v);
-//         }
-//     }
-    
-//     // Combine: non-_inner* first, then _inner*
-//     std::vector<std::string> ordered_vars;
-//     ordered_vars.insert(ordered_vars.end(), non_inner_vars.begin(), non_inner_vars.end());
-//     ordered_vars.insert(ordered_vars.end(), inner_vars.begin(), inner_vars.end());
-    
-//     long offset = -16; // first local after GC header (-8)
-//     long min_local_offset = 0; // track most negative
-//     long num_pointer_locals = 0; // count pointer/array-typed locals for GC
-//     bool first_local = true;
-
-//     for (const auto& v : ordered_vars) {
-//         var_offset_[v] = offset;
-
-//         // update min_local_offset
-//         if (first_local) {
-//             min_local_offset = offset;
-//             first_local = false;
-//         } else if (offset < min_local_offset) {
-//             min_local_offset = offset;
-//         }
-
-//         // Check if this local is a pointer or array type (needs GC tracking)
-//         // Exclude _inner* variables as they're temporaries for field/array access
-//         const auto& ty = fn.locals.at(v);
-//         if ((dynamic_cast<const PtrType*>(ty.get()) || 
-//              dynamic_cast<const ArrayType*>(ty.get())) &&
-//             v.find("_inner") != 0) {  // Don't track _inner* temporaries
-//             num_pointer_locals++;
-//         }
-
-//         offset -= 8;
-//     }
-    
-//     // All locals are roots for zeroing purposes
-//     num_root_words_ = fn.locals.size();
-    
-//     // Now allocate stack slots for parameters
-//     // First 6 params are passed in registers and need stack slots (negative offsets)
-//     // Params beyond 6 are on the stack already (positive offsets from %rbp)
-//     std::size_t num_params = fn.params.size();
-//     std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
-    
-//     // Allocate slots for first 6 params (passed in registers)
-//     long num_pointer_params = 0;
-//     for (std::size_t i = 0; i < num_reg_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         var_offset_[pname] = offset;
-        
-//         // Count pointer-typed parameters for GC
-//         if (dynamic_cast<const PtrType*>(ptype.get()) || 
-//             dynamic_cast<const ArrayType*>(ptype.get())) {
-//             num_pointer_params++;
-//         }
-        
-//         offset -= 8;
-//     }
-    
-//     // Params 7+ are on the stack at positive offsets: 16(%rbp), 24(%rbp), etc.
-//     long stack_param_offset = 16; // first stack param is at 16(%rbp)
-//     for (std::size_t i = 6; i < num_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         var_offset_[pname] = stack_param_offset;
-//         stack_param_offset += 8;
-//     }
-
-//     first_root_offset_ = -16;
-
-//     // words = 1 (GC header) + num_root_words (locals) + num_reg_params (first 6 params)
-//     long words = 1 + num_root_words_ + num_reg_params;
-//     if (words % 2 != 0) {
-//         words += 1; // padding word if odd number of words
-//     }
-//     frame_size_ = words * 8;
-
-//     // store for use in emit_prologue (start of locals to zero)
-//     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
-    
-//     // Store GC-tracked pointer count (locals + register params)
-//     gc_root_count_ = num_pointer_locals + num_pointer_params;
-// }
-
-
-
-
-// void Codegen::assign_stack_slots(const Function& fn) {
-//     var_offset_.clear();
-//     frame_size_ = 0;
-//     num_root_words_ = 0;
-//     first_root_offset_ = 0;
-
-//     // locals are stored in std::map<VarId, TypePtr>, so this is
-//     // lexicographic order by variable name – same as cflat.
-//     long offset = -16;
-//     long min_local_offset = 0;
-//     bool first_local = true;
-
-//     long num_pointer_locals = 0; // count pointer/array-typed locals for GC
-
-//     for (const auto& [v, ty] : fn.locals) {
-//         var_offset_[v] = offset;
-
-//         if (first_local) {
-//             min_local_offset = offset;
-//             first_local = false;
-//         } else if (offset < min_local_offset) {
-//             min_local_offset = offset;
-//         }
-        
-//         // Check if this local is a pointer or array type (needs GC tracking)
-//         // Exclude _inner* variables as they're temporaries for field/array access
-//         if ((dynamic_cast<const PtrType*>(ty.get()) || 
-//              dynamic_cast<const ArrayType*>(ty.get())) &&
-//             v.find("_inner") != 0) {  // Don't track _inner* temporaries
-//             num_pointer_locals++;
-//         }
-
-//         offset -= 8;
-//     }
-
-//     // All locals are zeroed
-//     num_root_words_ = static_cast<long>(fn.locals.size());
-    
-//     // Now allocate stack slots for parameters
-//     // First 6 params are passed in registers and need stack slots (negative offsets)
-//     // Params beyond 6 are on the stack already (positive offsets from %rbp)
-//     std::size_t num_params = fn.params.size();
-//     std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
-    
-//     // Allocate slots for first 6 params (passed in registers)
-//     long num_pointer_params = 0;
-//     for (std::size_t i = 0; i < num_reg_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         var_offset_[pname] = offset;
-        
-//         // Count pointer-typed parameters for GC
-//         if (dynamic_cast<const PtrType*>(ptype.get()) || 
-//             dynamic_cast<const ArrayType*>(ptype.get())) {
-//             num_pointer_params++;
-//         }
-        
-//         offset -= 8;
-//     }
-    
-//     // Params 7+ are on the stack at positive offsets: 16(%rbp), 24(%rbp), etc.
-//     long stack_param_offset = 16; // first stack param is at 16(%rbp)
-//     for (std::size_t i = 6; i < num_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         var_offset_[pname] = stack_param_offset;
-//         stack_param_offset += 8;
-//     }
-
-//     first_root_offset_ = -16;
-
-//     // Compute total frame size: 1 GC header + locals + reg params
-//     long words = 1 + num_root_words_ + num_reg_params;
-//     if (words % 2 != 0) {
-//         ++words; // pad to even
-//     }
-//     frame_size_ = words * 8;
-
-//     // Start zero_words at most negative local
-//     // first_root_offset_ = min_local_offset;
-
-//     // store for use in emit_prologue (start of locals to zero)
-//     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
-    
-//     // Store GC-tracked pointer count (locals + register params)
-//     gc_root_count_ = num_pointer_locals + num_pointer_params;
-// }
-
-// void Codegen::assign_stack_slots(const Function& fn) {
-//     var_offset_.clear();
-//     frame_size_ = 0;
-//     num_root_words_ = 0;
-//     first_root_offset_ = 0;
-
-//     //
-//     // 1. Decide the exact order of locals
-//     //    - all locals are in fn.locals_order in JSON/insertion order
-//     //    - but we group non-_inner* first, then _inner* temps
-//     //
-//     std::vector<std::string> non_inner_vars;
-//     std::vector<std::string> inner_vars;
-
-//     for (const auto& v : fn.locals_order) {
-//         if (v.rfind("_inner", 0) == 0) {        // starts with "_inner"
-//             inner_vars.push_back(v);
-//         } else {
-//             non_inner_vars.push_back(v);
-//         }
-//     }
-
-//     std::vector<std::string> ordered_vars;
-//     ordered_vars.reserve(fn.locals_order.size());
-//     ordered_vars.insert(ordered_vars.end(),
-//                         non_inner_vars.begin(), non_inner_vars.end());
-//     ordered_vars.insert(ordered_vars.end(),
-//                         inner_vars.begin(), inner_vars.end());
-
-//     //
-//     // 2. Assign stack slots for locals, starting at -16(%rbp)
-//     //    (GC header is at -8(%rbp))
-//     //
-//     long offset           = -16;
-//     long min_local_offset = 0;
-//     bool first_local      = true;
-
-//     long num_pointer_locals = 0;   // pointer/array locals that are GC roots
-
-//     for (const auto& v : ordered_vars) {
-//         var_offset_[v] = offset;
-
-//         if (first_local) {
-//             min_local_offset = offset;
-//             first_local      = false;
-//         } else if (offset < min_local_offset) {
-//             min_local_offset = offset;
-//         }
-
-//         // Look up the type for GC info
-//         auto it = fn.locals.find(v);
-//         assert(it != fn.locals.end());
-//         const auto& ty = it->second;
-
-//         // Count pointer/array locals as GC roots, but skip _inner* temps
-//         if ( (dynamic_cast<const PtrType*>(ty.get())  ||
-//               dynamic_cast<const ArrayType*>(ty.get())) &&
-//              v.rfind("_inner", 0) != 0 ) {
-//             ++num_pointer_locals;
-//         }
-
-//         offset -= 8;
-//     }
-
-//     // All locals (not just pointer ones) are zeroed by _cflat_zero_words
-//     num_root_words_ = static_cast<long>(ordered_vars.size());
-
-//     //
-//     // 3. Assign stack slots for parameters
-//     //    - first 6 in registers, spill to negative offsets
-//     //    - the rest live at positive offsets 16(%rbp), 24(%rbp), ...
-//     //
-//     std::size_t num_params     = fn.params.size();
-//     std::size_t num_reg_params = std::min<std::size_t>(6, num_params);
-
-//     long num_pointer_params = 0;
-
-//     // Register-passed params (we give them stack slots below locals)
-//     for (std::size_t i = 0; i < num_reg_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         var_offset_[pname] = offset;
-
-//         if (dynamic_cast<const PtrType*>(ptype.get()) ||
-//             dynamic_cast<const ArrayType*>(ptype.get())) {
-//             ++num_pointer_params;
-//         }
-
-//         offset -= 8;
-//     }
-
-//     // Stack-passed params (7+): already at positive offsets
-//     long stack_param_offset = 16;            // first is 16(%rbp)
-//     for (std::size_t i = 6; i < num_params; ++i) {
-//         const auto& [pname, ptype] = fn.params[i];
-//         (void)ptype;                        // type not needed for layout
-//         var_offset_[pname] = stack_param_offset;
-//         stack_param_offset += 8;
-//     }
-
-//     //
-//     // 4. Compute frame size and GC metadata
-//     //
-//     // GC header word + all locals + reg params
-//     long words = 1 + num_root_words_ + static_cast<long>(num_reg_params);
-//     if (words % 2 != 0) {
-//         ++words;            // keep stack 16-byte aligned
-//     }
-//     frame_size_ = words * 8;
-
-//     // Start zero_words at the most negative local
-//     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
-
-//     // Number of pointer roots for the GC header at -8(%rbp)
-//     gc_root_count_ = num_pointer_locals + num_pointer_params;
-// }
-
 void Codegen::assign_stack_slots(const Function& fn) {
     var_offset_.clear();
     frame_size_ = 0;
     num_root_words_ = 0;
     first_root_offset_ = 0;
+    gc_root_count_ = 0;
 
-    // Put a GC header at -8(%rbp) and locals below that
-    // Collect locals into a deterministic order
-    std::vector<std::string> vars;
-    vars.reserve(fn.locals.size());
-    for (const auto& [v, _] : fn.locals) {
-        vars.push_back(v);
+    //
+    // 1. Partition locals into GC roots vs non-roots, preserving locals_order
+    //
+    std::vector<std::string> root_vars;     // non-inner pointer/array locals
+    std::vector<std::string> nonroot_vars; // everything else
+
+    root_vars.reserve(fn.locals_order.size());
+    nonroot_vars.reserve(fn.locals_order.size());
+
+    for (const auto& v : fn.locals_order) {
+        auto it = fn.locals.find(v);
+        assert(it != fn.locals.end());
+        const auto& ty = it->second;
+
+        bool is_ptr =
+            dynamic_cast<const PtrType*>(ty.get())   != nullptr ||
+            dynamic_cast<const ArrayType*>(ty.get()) != nullptr;
+        bool is_inner = (v.rfind("_inner", 0) == 0);
+
+        if (is_ptr && !is_inner) {
+            // GC-root local
+            root_vars.push_back(v);
+        } else {
+            // non-root local (ints, _const_*, _inner*, etc.)
+            nonroot_vars.push_back(v);
+        }
     }
-    std::sort(vars.begin(), vars.end());
 
-    long offset = -16; // first local after GC header (-8)
-    long min_local_offset = 0; // track most negative
+    std::vector<std::string> ordered_vars;
+    ordered_vars.reserve(fn.locals_order.size());
+    // All GC-root locals first, then all non-root locals
+    ordered_vars.insert(ordered_vars.end(), root_vars.begin(), root_vars.end());
+    ordered_vars.insert(ordered_vars.end(), nonroot_vars.begin(), nonroot_vars.end());
 
-    for (const auto& v : vars) {
+    //
+    // 2. Assign stack offsets for locals
+    //
+    long offset = -16;          // first local after GC header at -8(%rbp)
+    long min_local_offset = 0;  // most negative local offset
+    bool first_local = true;
+
+    for (const auto& v : ordered_vars) {
         var_offset_[v] = offset;
 
-        // update min_local_offset
-        if (num_root_words_ == 0) {
-        // first local
+        if (first_local) {
             min_local_offset = offset;
+            first_local = false;
         } else if (offset < min_local_offset) {
             min_local_offset = offset;
         }
 
-        offset -= 8;
-        num_root_words_ += 1; // treat all locals as GC roots for now
+        offset -= 8; // next local
     }
 
-    // Now allocate stack slots for parameters
-    // First 6 params are passed in registers and need stack slots (negative offsets)
-    // Params 7+ are on the stack already (positive offsets from %rbp)
-    std::size_t num_params = fn.params.size();
+    // All locals are zeroed by _cflat_zero_words
+    num_root_words_ = static_cast<long>(fn.locals.size());
+
+    //
+    // 3. Parameters (same as before)
+    //
+    std::size_t num_params     = fn.params.size();
     std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
-    
-    // Allocate slots for first 6 params (passed in registers)
+    long num_pointer_params    = 0;
+
+    // First up to 6 params: passed in registers → spill to negative offsets
     for (std::size_t i = 0; i < num_reg_params; ++i) {
         const auto& [pname, ptype] = fn.params[i];
         var_offset_[pname] = offset;
+
+        bool is_ptr =
+            dynamic_cast<const PtrType*>(ptype.get())   != nullptr ||
+            dynamic_cast<const ArrayType*>(ptype.get()) != nullptr;
+        if (is_ptr) {
+            ++num_pointer_params;
+        }
+
         offset -= 8;
     }
-    
-    // Params 7+ are on the stack at positive offsets: 16(%rbp), 24(%rbp), etc.
-    long stack_param_offset = 16; // first stack param is at 16(%rbp)
+
+    // Params 7+ already on stack: 16(%rbp), 24(%rbp), ...
+    long stack_param_offset = 16;
     for (std::size_t i = 6; i < num_params; ++i) {
         const auto& [pname, ptype] = fn.params[i];
         var_offset_[pname] = stack_param_offset;
         stack_param_offset += 8;
     }
 
-    first_root_offset_ = -16;
+    //
+    // 4. Frame size & zeroing region
+    //
+    long words = 1                // GC header word
+               + num_root_words_  // locals
+               + static_cast<long>(num_reg_params); // spilled reg params
 
-    // words = 1 (GC header) + num_root_words (locals) + num_reg_params (first 6 params)
-    long words = 1 + num_root_words_ + num_reg_params;
     if (words % 2 != 0) {
-        words += 1; // padding word if odd number of words
+        ++words;                  // keep 16-byte alignment
     }
-    frame_size_ = words * 8;
 
-    // store for use in emit_prologue (start of locals to zero)
+    frame_size_ = words * 8;
     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
+
+    //
+    // 5. GC root count in header = root locals + pointer params
+    //
+    long num_pointer_locals = static_cast<long>(root_vars.size());
+    gc_root_count_ = num_pointer_locals + num_pointer_params;
 }
 
 
@@ -639,17 +409,31 @@ void Codegen::emit_cmp(const Cmp& c) {
     out_ << "  movq %r8, " << slot(c.lhs) << "\n"; // store boolean (0/1) into dest
 }
 
+// void Codegen::emit_load(const Load& l) {
+//     out_ << "  movq " << slot(l.src) << ", %r10\n";
+//     out_ << "  movq 0(%r10), %rax\n";
+//     out_ << "  movq %rax, " << slot(l.lhs) << "\n";
+// }
+
 void Codegen::emit_load(const Load& l) {
-    out_ << "  movq " << slot(l.src) << ", %r10\n";
-    out_ << "  movq 0(%r10), %rax\n";
-    out_ << "  movq %rax, " << slot(l.lhs) << "\n";
+    out_ << "  movq " << slot(l.src) << ", %r8\n";
+    out_ << "  movq 0(%r8), %r9\n";
+    out_ << "  movq %r9, " << slot(l.lhs) << "\n";
 }
 
+
+// void Codegen::emit_store(const Store& s) {
+//     out_ << "  movq " << slot(s.op) << ", %rax\n";
+//     out_ << "  movq " << slot(s.dst) << ", %r10\n";
+//     out_ << "  movq %rax, 0(%r10)\n";
+// }
+
 void Codegen::emit_store(const Store& s) {
-    out_ << "  movq " << slot(s.op) << ", %rax\n";
-    out_ << "  movq " << slot(s.dst) << ", %r10\n";
-    out_ << "  movq %rax, 0(%r10)\n";
+    out_ << "  movq " << slot(s.op) << ", %r8\n";
+    out_ << "  movq " << slot(s.dst) << ", %r9\n";
+    out_ << "  movq %r8, 0(%r9)\n";
 }
+
 
 void Codegen::emit_call(const Call& call) {
     // Handle calls with any number of arguments:
@@ -700,25 +484,33 @@ void Codegen::emit_call(const Call& call) {
     }
 }
 
+// void Codegen::emit_gfp(const Gfp& g) {
+//     // src is a pointer to the struct
+//     out_ << "  movq " << slot(g.src) << ", %r8\n";
+
+//     long off = 0;
+//     auto sit = struct_field_offsets_.find(g.sid);
+//     if (sit != struct_field_offsets_.end()) {
+//         auto fit = sit->second.find(g.field);
+//         if (fit != sit->second.end()) {
+//             off = fit->second;
+//         }
+//     }
+//     // If we didn't find it, we just treat offset as 0 to avoid crashing;
+//     // but ideally this never happens.
+
+//     if (off != 0) {
+//         out_ << "  addq $" << off << ", %r8\n";
+//     }
+//     out_ << "  movq %r8, " << slot(g.lhs) << "\n";
+// }
+
 void Codegen::emit_gfp(const Gfp& g) {
-    // src is a pointer to the struct
     out_ << "  movq " << slot(g.src) << ", %r8\n";
-
-    long off = 0;
-    auto sit = struct_field_offsets_.find(g.sid);
-    if (sit != struct_field_offsets_.end()) {
-        auto fit = sit->second.find(g.field);
-        if (fit != sit->second.end()) {
-            off = fit->second;
-        }
-    }
-    // If we didn't find it, we just treat offset as 0 to avoid crashing;
-    // but ideally this never happens.
-
-    if (off != 0) {
-        out_ << "  addq $" << off << ", %r8\n";
-    }
-    out_ << "  movq %r8, " << slot(g.lhs) << "\n";
+    //long off = /* 8 * field_index, from struct_field_offsets_ */;
+    long off = struct_field_offsets_.at(g.sid).at(g.field);
+    out_ << "  leaq " << off << "(%r8), %r9\n";
+    out_ << "  movq %r9, " << slot(g.lhs) << "\n";
 }
 
 void Codegen::emit_gep(const Gep& g) {
@@ -751,38 +543,89 @@ void Codegen::emit_gep(const Gep& g) {
     out_ << "  movq %r8, " << slot(g.lhs) << "\n";
 }
 
-void Codegen::emit_alloc_single(const AllocSingle& a) {
-    // Very simple stub: allocate 2 words (header + 1 payload word)
-    // rdi = #words
-    out_ << "  movq $2, %rdi\n";
-    out_ << "  call _cflat_alloc\n";
+// void Codegen::emit_alloc_single(const AllocSingle& a) {
+//     // Very simple stub: allocate 2 words (header + 1 payload word)
+//     // rdi = #words
+//     out_ << "  movq $2, %rdi\n";
+//     out_ << "  call _cflat_alloc\n";
 
-    // header: 1 element word => len = 1 => header = 1*8 + 2 = 10
-    // (You can tune this if your runtime expects a different tag.)
-    out_ << "  movq $10, %r8\n";
-    out_ << "  movq %r8, 0(%rax)\n";
+//     // header: 1 element word => len = 1 => header = 1*8 + 2 = 10
+//     // (You can tune this if your runtime expects a different tag.)
+//     out_ << "  movq $10, %r8\n";
+//     out_ << "  movq %r8, 0(%rax)\n";
 
-    // result pointer = %rax + 8
-    out_ << "  addq $8, %rax\n";
-    out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+//     // result pointer = %rax + 8
+//     out_ << "  addq $8, %rax\n";
+//     out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+// }
+void Codegen::emit_alloc_single(const LIR::AllocSingle& a) {
+    LIR::TypePtr t = a.typ;
+
+    // CASE 1: boxed Int
+    if (dynamic_cast<const LIR::IntType*>(t.get())) {
+        out_ << "  movq $2, %rdi\n";
+        out_ << "  call _cflat_alloc\n";
+        out_ << "  movabsq $4, %r8\n";
+        out_ << "  movq %r8, 0(%rax)\n";
+        out_ << "  addq $8, %rax\n";
+        out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+        return;
+    }
+
+    // CASE 2: struct
+    if (auto st = dynamic_cast<const StructType*>(t.get())) {
+        const std::string& sid = st->id;
+
+        // number of fields = number of offsets we stored
+        std::size_t nfields = struct_field_offsets_.at(sid).size();
+
+        // bitmap from our precomputed map
+        uint64_t bitmap = struct_bitmaps_.at(sid);
+
+        // tag = 0 for non-array objects
+        //uint64_t header = bitmap << 3;
+        //uint64_t header = 260ull * bitmap;
+        uint64_t header = (bitmap << 8) | 8;
+
+        // allocate header + fields = nfields + 1
+        out_ << "  movq $" << (nfields + 1) << ", %rdi\n";
+        out_ << "  call _cflat_alloc\n";
+
+        // store header
+        out_ << "  movabsq $" << header << ", %r8\n";
+        out_ << "  movq %r8, 0(%rax)\n";
+
+        // compute address of field 0
+        out_ << "  addq $8, %rax\n";
+
+        // store result
+        out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+        return;
+    }
+
+    if (dynamic_cast<const LIR::PtrType*>(t.get()) ||
+        dynamic_cast<const LIR::ArrayType*>(t.get())) {
+        out_ << "  movq $2, %rdi\n";
+        out_ << "  call _cflat_alloc\n";
+        // bitmap = 1 (payload word is a pointer), tag = 4
+        out_ << "  movabsq $260, %r8\n";   // (1 << 8) | 4
+        out_ << "  movq %r8, 0(%rax)\n";
+        out_ << "  addq $8, %rax\n";
+        out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+        return;
+    }
 }
 
 
 void Codegen::emit_alloc_array(const AllocArray& a) {
-    // amt is the requested length
-    // slot(a.amt) → length
-
-    // Load length into %r8
-    out_ << "  movq " << slot(a.amt) << ", %r8\n";
-
     // length <= 0 → invalid_alloc_length
-    out_ << "  cmpq $0, %r8\n";
+    out_ << "  cmpq $0, " << slot(a.amt) << "\n";
     out_ << "  jle .invalid_alloc_length\n";
 
     // length >= 2^61 → invalid_alloc_length (avoid overflow)
-    out_ << "  movq $1, %r9\n";
-    out_ << "  shlq $61, %r9\n";
-    out_ << "  cmpq %r9, %r8\n";
+    out_ << "  movq $1, %r8\n";
+    out_ << "  shlq $61, %r8\n";
+    out_ << "  cmpq %r8, " << slot(a.amt) << "\n";
     out_ << "  jge .invalid_alloc_length\n";
 
     // rdi = length + 1  (#words: 1 header + length elements)
@@ -791,13 +634,29 @@ void Codegen::emit_alloc_array(const AllocArray& a) {
     out_ << "  call _cflat_alloc\n";
 
     // compute header word: header = len*8 + tag
-    // we'll use tag = 2 for "plain word array" (matches many TS4 cases)
+    int tag = 2;  // default: array of non-GC values (e.g., Int)
+
+    const TypePtr &elemTy = a.typ;
+    bool elem_is_ptr =
+        dynamic_cast<const PtrType*>(elemTy.get())   != nullptr ||
+        dynamic_cast<const ArrayType*>(elemTy.get()) != nullptr;
+
+    if (elem_is_ptr) {
+        tag = 6;   // array of GC pointers
+    }
+    
+    
     out_ << "  movq " << slot(a.amt) << ", %r8\n";
-    out_ << "  shlq $3, %r8\n";           // len * 8
-    out_ << "  addq $2, %r8\n";           // header = len*8 + 2
+    out_ << "  shlq $3, %r8\n";
+    out_ << "  addq $" << tag << ", %r8\n";
     out_ << "  movq %r8, 0(%rax)\n";
 
     // result pointer = &data[0] = %rax + 8
     out_ << "  addq $8, %rax\n";
     out_ << "  movq %rax, " << slot(a.lhs) << "\n";
+}
+
+bool Codegen::is_gc_pointer_type(const LIR::TypePtr& ty) const {
+    return dynamic_cast<const LIR::PtrType*>(ty.get())   != nullptr ||
+           dynamic_cast<const LIR::ArrayType*>(ty.get()) != nullptr;
 }

@@ -23,6 +23,8 @@ private:
     std::map<LIR::StructId, std::map<LIR::FieldId, long>> struct_field_offsets_;
     long gc_root_count_ = 0;                 // number of pointer-typed locals/params for GC
 
+    std::map<LIR::StructId, uint64_t> struct_bitmaps_;
+
     
     // High-level emission
     void emit_data(const LIR::Program& prog);
@@ -62,4 +64,5 @@ private:
     void emit_alloc_array(const LIR::AllocArray& a);
 
     const char* cond_suffix(LIR::RelOp op) const;
+    bool is_gc_pointer_type(const LIR::TypePtr& ty) const;
 };
