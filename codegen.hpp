@@ -3,6 +3,7 @@
 #include <ostream>
 #include <map>
 #include <string>
+#include <set>
 #include "lir.hpp"
 
 class Codegen {
@@ -22,6 +23,12 @@ private:
     long num_root_words_ = 0;                // words passed to _cflat_zero_words
     std::map<LIR::StructId, std::map<LIR::FieldId, long>> struct_field_offsets_;
     long gc_root_count_ = 0;                 // number of pointer-typed locals/params for GC
+
+    std::map<LIR::StructId, uint64_t> struct_bitmaps_;
+    std::set<std::string> funptr_names_;
+    std::set<std::string> function_names_;
+    std::set<std::string> extern_names_;
+    
 
     
     // High-level emission
@@ -62,4 +69,5 @@ private:
     void emit_alloc_array(const LIR::AllocArray& a);
 
     const char* cond_suffix(LIR::RelOp op) const;
+    bool is_gc_pointer_type(const LIR::TypePtr& ty) const;
 };
