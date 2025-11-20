@@ -3,6 +3,7 @@
 #include <ostream>
 #include <map>
 #include <string>
+#include <set>
 #include "lir.hpp"
 
 class Codegen {
@@ -24,6 +25,10 @@ private:
     long gc_root_count_ = 0;                 // number of pointer-typed locals/params for GC
 
     std::map<LIR::StructId, uint64_t> struct_bitmaps_;
+    std::set<std::string> funptr_names_;
+    std::set<std::string> function_names_;
+    std::set<std::string> extern_names_;
+    
 
     
     // High-level emission

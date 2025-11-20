@@ -23,6 +23,8 @@ using namespace LIR;
 void Codegen::emit_program(const LIR::Program& prog) {
     struct_field_offsets_.clear();
     struct_bitmaps_.clear();
+    funptr_names_.clear();
+    extern_names_.clear();
 
     for (const auto& [sid, s] : prog.structs) {
         long offset = 0;
@@ -42,6 +44,18 @@ void Codegen::emit_program(const LIR::Program& prog) {
         struct_bitmaps_[sid] = bitmap;
     }
 
+    for (const auto& [fname, ftype] : prog.funptrs) {
+        funptr_names_.insert(fname);
+    }
+
+    for (const auto& [fname, fn] : prog.functions) {
+        function_names_.insert(fname);
+    }
+
+    for (const auto& [ename, ety] : prog.externs) {
+        extern_names_.insert(ename);
+    }
+
     emit_data(prog);
     emit_text(prog);
 }
@@ -49,8 +63,6 @@ void Codegen::emit_program(const LIR::Program& prog) {
 void Codegen::emit_data(const Program& prog) {
     out_ << ".data\n\n";
 
-    // Funptr table: for each internal function in prog.funptrs,
-    // emit: gfp.<name>: .quad "<name>"
     for (const auto& [fname, ftype] : prog.funptrs) {
         out_ << ".globl gfp." << fname << "\n";
         out_ << "gfp." << fname << ": .quad \"" << fname << "\"\n\n\n";
@@ -85,16 +97,14 @@ void Codegen::emit_text(const Program& prog) {
 
 void Codegen::assign_stack_slots(const Function& fn) {
     var_offset_.clear();
-    frame_size_ = 0;
-    num_root_words_ = 0;
+    frame_size_        = 0;
+    num_root_words_    = 0;
     first_root_offset_ = 0;
-    gc_root_count_ = 0;
+    gc_root_count_     = 0;
 
-    //
-    // 1. Partition locals into GC roots vs non-roots, preserving locals_order
-    //
-    std::vector<std::string> root_vars;     // non-inner pointer/array locals
-    std::vector<std::string> nonroot_vars; // everything else
+    // ---- 1. Partition locals into GC roots vs non-roots ----
+    std::vector<std::string> root_vars;
+    std::vector<std::string> nonroot_vars;
 
     root_vars.reserve(fn.locals_order.size());
     nonroot_vars.reserve(fn.locals_order.size());
@@ -110,91 +120,114 @@ void Codegen::assign_stack_slots(const Function& fn) {
         bool is_inner = (v.rfind("_inner", 0) == 0);
 
         if (is_ptr && !is_inner) {
-            // GC-root local
             root_vars.push_back(v);
         } else {
-            // non-root local (ints, _const_*, _inner*, etc.)
             nonroot_vars.push_back(v);
         }
     }
 
-    std::vector<std::string> ordered_vars;
-    ordered_vars.reserve(fn.locals_order.size());
-    // All GC-root locals first, then all non-root locals
-    ordered_vars.insert(ordered_vars.end(), root_vars.begin(), root_vars.end());
-    ordered_vars.insert(ordered_vars.end(), nonroot_vars.begin(), nonroot_vars.end());
+    std::vector<std::string> ordered_locals;
+    ordered_locals.reserve(fn.locals_order.size());
+    ordered_locals.insert(ordered_locals.end(), root_vars.begin(), root_vars.end());
+    ordered_locals.insert(ordered_locals.end(), nonroot_vars.begin(), nonroot_vars.end());
 
-    //
-    // 2. Assign stack offsets for locals
-    //
-    long offset = -16;          // first local after GC header at -8(%rbp)
-    long min_local_offset = 0;  // most negative local offset
-    bool first_local = true;
+    // ---- 2. Classify parameters ----
+    std::size_t num_params     = fn.params.size();
+    std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
 
-    for (const auto& v : ordered_vars) {
+    std::vector<bool> is_ptr_param(num_params, false);
+    std::vector<std::size_t> ptr_stack_params;    // i >= 6, pointer
+    std::vector<std::size_t> ptr_reg_params;      // i < 6, pointer
+    std::vector<std::size_t> nonptr_reg_params;   // i < 6, non-pointer
+
+    for (std::size_t i = 0; i < num_params; ++i) {
+        const auto& pty = fn.params[i].second;
+        bool is_ptr =
+            dynamic_cast<const PtrType*>(pty.get())   != nullptr ||
+            dynamic_cast<const ArrayType*>(pty.get()) != nullptr;
+        is_ptr_param[i] = is_ptr;
+
+        if (i < 6) {
+            if (is_ptr) ptr_reg_params.push_back(i);
+            else        nonptr_reg_params.push_back(i);
+        } else {
+            if (is_ptr) ptr_stack_params.push_back(i);
+        }
+    }
+
+    // ---- 3. Assign stack offsets ----
+    long offset           = -16;   // first word below GC header
+    long min_local_offset = 0;
+    bool first_local      = true;
+
+    // 3a. Pointer params passed on stack → GC root slots first
+    for (std::size_t i : ptr_stack_params) {
+        const std::string& pname = fn.params[i].first;
+        var_offset_[pname] = offset;
+        offset -= 8;
+    }
+
+    // 3b. Pointer params passed in registers → GC root slots next
+    for (std::size_t i : ptr_reg_params) {
+        const std::string& pname = fn.params[i].first;
+        var_offset_[pname] = offset;
+        offset -= 8;
+    }
+
+    // 3c. All locals
+    for (const auto& v : ordered_locals) {
         var_offset_[v] = offset;
 
         if (first_local) {
             min_local_offset = offset;
-            first_local = false;
+            first_local      = false;
         } else if (offset < min_local_offset) {
             min_local_offset = offset;
         }
-
-        offset -= 8; // next local
-    }
-
-    // All locals are zeroed by _cflat_zero_words
-    num_root_words_ = static_cast<long>(fn.locals.size());
-
-    //
-    // 3. Parameters (same as before)
-    //
-    std::size_t num_params     = fn.params.size();
-    std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
-    long num_pointer_params    = 0;
-
-    // First up to 6 params: passed in registers → spill to negative offsets
-    for (std::size_t i = 0; i < num_reg_params; ++i) {
-        const auto& [pname, ptype] = fn.params[i];
-        var_offset_[pname] = offset;
-
-        bool is_ptr =
-            dynamic_cast<const PtrType*>(ptype.get())   != nullptr ||
-            dynamic_cast<const ArrayType*>(ptype.get()) != nullptr;
-        if (is_ptr) {
-            ++num_pointer_params;
-        }
-
         offset -= 8;
     }
 
-    // Params 7+ already on stack: 16(%rbp), 24(%rbp), ...
-    long stack_param_offset = 16;
-    for (std::size_t i = 6; i < num_params; ++i) {
-        const auto& [pname, ptype] = fn.params[i];
-        var_offset_[pname] = stack_param_offset;
-        stack_param_offset += 8;
+    // Only locals are zeroed
+    num_root_words_ = static_cast<long>(fn.locals.size());
+
+    // 3d. Non-pointer register params after locals
+    for (std::size_t i : nonptr_reg_params) {
+        const std::string& pname = fn.params[i].first;
+        var_offset_[pname] = offset;
+        offset -= 8;
     }
 
-    //
-    // 4. Frame size & zeroing region
-    //
-    long words = 1                // GC header word
+    // 3e. Stack params (i >= 6):
+    long stack_param_offset = 16;
+    for (std::size_t i = 6; i < num_params; ++i) {
+        const std::string& pname = fn.params[i].first;
+        if (is_ptr_param[i]) {
+            stack_param_offset += 8;
+            continue;
+        } else {
+            var_offset_[pname] = stack_param_offset;
+            stack_param_offset += 8;
+        }
+    }
+
+    // ---- 4. Frame size ----
+    long num_spilled_reg_params   = static_cast<long>(num_reg_params);
+    long num_spilled_stack_ptrs   = static_cast<long>(ptr_stack_params.size());
+    long words = 1                // GC header
                + num_root_words_  // locals
-               + static_cast<long>(num_reg_params); // spilled reg params
+               + num_spilled_reg_params
+               + num_spilled_stack_ptrs;
 
     if (words % 2 != 0) {
-        ++words;                  // keep 16-byte alignment
+        ++words;  // keep 16-byte alignment
     }
 
     frame_size_ = words * 8;
     first_root_offset_ = (num_root_words_ > 0) ? min_local_offset : 0;
 
-    //
-    // 5. GC root count in header = root locals + pointer params
-    //
-    long num_pointer_locals = static_cast<long>(root_vars.size());
+    // ---- 5. GC root count in header ----
+    long num_pointer_locals  = static_cast<long>(root_vars.size());
+    long num_pointer_params  = static_cast<long>(ptr_stack_params.size() + ptr_reg_params.size());
     gc_root_count_ = num_pointer_locals + num_pointer_params;
 }
 
@@ -211,18 +244,56 @@ void Codegen::emit_prologue(const Function& fn,
         out_ << "  subq $" << frame_size_ << ", %rsp\n";
     }
 
-    // GC header at -8(%rbp): store the count of pointer-typed locals/params
+    // GC header at -8(%rbp): #pointer roots
     out_ << "  movq $" << gc_root_count_ << ", -8(%rbp)\n";
 
-    // Save register-passed parameters to stack
-    // First 6 parameters are passed in: %rdi, %rsi, %rdx, %rcx, %r8, %r9
     const char* param_regs[] = {"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
-    for (size_t i = 0; i < fn.params.size() && i < 6; ++i) {
-        const auto& [pname, ptype] = fn.params[i];
-        out_ << "  movq " << param_regs[i] << ", " << slot(pname) << "\n";
+
+    std::size_t num_params     = fn.params.size();
+    std::size_t num_reg_params = (num_params < 6) ? num_params : 6;
+
+    std::vector<std::size_t> ptr_stack_indices;
+    std::vector<std::size_t> ptr_reg_indices;
+    std::vector<std::size_t> nonptr_reg_indices;
+
+    for (std::size_t i = 0; i < num_params; ++i) {
+        const auto& pty = fn.params[i].second;
+        bool is_ptr =
+            dynamic_cast<const PtrType*>(pty.get())   != nullptr ||
+            dynamic_cast<const ArrayType*>(pty.get()) != nullptr;
+
+        if (i < 6) {
+            if (is_ptr) ptr_reg_indices.push_back(i);
+            else        nonptr_reg_indices.push_back(i);
+        } else {
+            if (is_ptr) ptr_stack_indices.push_back(i);
+        }
     }
 
-    // Zero root words if any
+    auto spill_reg_param = [&](std::size_t i) {
+        const auto& pname = fn.params[i].first;
+        out_ << "  movq " << param_regs[i] << ", " << slot(pname) << "\n";
+    };
+
+    // 1) Pointer params on stack: copy from 16(%rbp)+ into their negative slots
+    for (std::size_t i : ptr_stack_indices) {
+        const auto& pname = fn.params[i].first;
+        long src_off = 16 + 8 * static_cast<long>(i - 6);
+        out_ << "  movq " << src_off << "(%rbp), %r10\n";
+        out_ << "  movq %r10, " << slot(pname) << "\n";
+    }
+
+    // 2) Pointer params in registers
+    for (std::size_t i : ptr_reg_indices) {
+        spill_reg_param(i);
+    }
+
+    // 3) Non-pointer params in registers
+    for (std::size_t i : nonptr_reg_indices) {
+        spill_reg_param(i);
+    }
+
+    // Zero locals (not parameter copies)
     if (num_root_words_ > 0) {
         out_ << "  movq %rbp, %rdi\n";
         out_ << "  addq $" << first_root_offset_ << ", %rdi\n";
@@ -234,7 +305,6 @@ void Codegen::emit_prologue(const Function& fn,
         out_ << "  call _cflat_init_gc\n";
     }
 
-    // Jump to entry block
     out_ << "  jmp " << asm_label(name, "entry") << "\n\n";
 }
 
@@ -251,20 +321,27 @@ std::string Codegen::asm_label(const std::string& fn_name,
 }
 
 std::string Codegen::slot(const std::string& var) const {
-    // Handle special global variables
+    // Special global constant
     if (var == "__NULL") {
         return "__NULL(%rip)";
     }
-    
+
+    // Stack locals / params
     auto it = var_offset_.find(var);
-    if (it == var_offset_.end()) {
-        // Unknown variable
-        std::cerr << "ERROR: Unknown variable '" << var << "' in slot()\n";
-        std::cerr << "Available variables in var_offset_: " << var_offset_.size() << "\n";
-        assert(false && "Unknown variable in slot()");
+    if (it != var_offset_.end()) {
+        long off = it->second;
+        return std::to_string(off) + "(%rbp)";
     }
-    long off = it->second;
-    return std::to_string(off) + "(%rbp)";
+
+    // Global function-pointer variables (keys of prog.funptrs)
+    if (funptr_names_.count(var)) {
+        return "gfp." + var + "(%rip)";
+    }
+
+    std::cerr << "ERROR: Unknown variable '" << var << "' in slot()\n";
+    std::cerr << "Available variables in var_offset_: " << var_offset_.size() << "\n";
+    assert(false && "Unknown variable in slot()");
+    return ""; // unreachable
 }
 
 void Codegen::emit_function(const Function& fn,
@@ -293,9 +370,9 @@ void Codegen::emit_basic_block(const Function&,
 }
 
 void Codegen::emit_inst(const Inst& inst,
-                        const std::string& /*fn_name*/) {
+                        const std::string&) {
     std::visit([this](auto&& arg) {
-        using T = std::decay_t<decltype(arg)>; // detect which concrete instruction type arg is
+        using T = std::decay_t<decltype(arg)>;
         if constexpr (std::is_same_v<T, Const>) {
             emit_const(arg);
         } else if constexpr (std::is_same_v<T, Copy>) {
@@ -340,7 +417,6 @@ void Codegen::emit_terminal(const Terminal& term,
             }
             out_ << "  jmp " << fn_name << "_epilogue\n";
         } else {
-            // std::monostate: no terminal (shouldn't happen)
         }
     }, term);
 }
@@ -359,19 +435,18 @@ void Codegen::emit_copy(const Copy& c) {
 
 void Codegen::emit_arith(const Arith& a) {
     if (a.aop == ArithOp::Div) {
-        out_ << "  movq " << slot(a.left) << ", %rax\n"; // Load the dividend into %rax
-        out_ << "  movq " << slot(a.right) << ", %r8\n"; // Load the divisor into %r8
-        out_ << "  cmpq $0, %r8\n"; // Compare divisor with 0
+        out_ << "  movq " << slot(a.left) << ", %rax\n"; 
+        out_ << "  movq " << slot(a.right) << ", %r8\n"; 
+        out_ << "  cmpq $0, %r8\n"; 
         out_ << "  movq $1, %r9\n";
-        out_ << "  cmoveq %r9, %r8\n"; // If previous comparison was equal (%r8 == 0), move 1 into %r8 to avoid division by zero
+        out_ << "  cmoveq %r9, %r8\n";
         out_ << "  movq $0, %r9\n";
-        out_ << "  cmoveq %r9, %rax\n"; // If divisor was 0, then copy 0 into %rax
-        out_ << "  cqo\n"; // sign-extend %rax into %rdx, treats %rax as a 64-bit signed integer and fills %rdx with its sign bit   
-        out_ << "  idivq %r8\n"; // signed division, quotient in %rax, %rdx = remainder
+        out_ << "  cmoveq %r9, %rax\n";
+        out_ << "  cqo\n";
+        out_ << "  idivq %r8\n";
         out_ << "  movq %rax, " << slot(a.lhs) << "\n";
         return;
     }
-    // non-division arithmetic: use %r8 and memory operand for rhs
     out_ << "  movq " << slot(a.left) << ", %r8\n";
     switch (a.aop) {
         case ArithOp::Add:
@@ -402,11 +477,11 @@ const char* Codegen::cond_suffix(RelOp op) const {
 }
 
 void Codegen::emit_cmp(const Cmp& c) {
-    out_ << "  movq " << slot(c.left) << ", %r8\n"; // lhs in %r8
-    out_ << "  cmpq " << slot(c.right) << ", %r8\n"; // compare rhs (memory) against %r8
-    out_ << "  movq $0, %r8\n"; // zero full %r8
-    out_ << "  set" << cond_suffix(c.rop) << " %r8b\n"; // set condition into low byte of %r8
-    out_ << "  movq %r8, " << slot(c.lhs) << "\n"; // store boolean (0/1) into dest
+    out_ << "  movq " << slot(c.left) << ", %r8\n"; 
+    out_ << "  cmpq " << slot(c.right) << ", %r8\n";
+    out_ << "  movq $0, %r8\n"; 
+    out_ << "  set" << cond_suffix(c.rop) << " %r8b\n";
+    out_ << "  movq %r8, " << slot(c.lhs) << "\n";
 }
 
 // void Codegen::emit_load(const Load& l) {
@@ -440,7 +515,7 @@ void Codegen::emit_call(const Call& call) {
     //   - move up to 6 into %rdi, %rsi, %rdx, %rcx, %r8, %r9
     //   - push extras in reverse order (arg 6+n, ..., arg 7, arg 6)
     //   - maintain 16-byte stack alignment before call
-    static const char* arg_regs[] = {"%rdi","%rsi","%rdx","%rcx","%r8","%r9"};
+    static const char* arg_regs[] = {"%rdi","%rsi", "%rdx", "%rcx","%r8","%r9"};
 
     std::size_t n = call.args.size();
     std::size_t num_stack_args = (n > 6) ? (n - 6) : 0;
@@ -469,8 +544,18 @@ void Codegen::emit_call(const Call& call) {
         }
     }
 
-    // Call the function
-    out_ << "  call " << call.callee << "\n";
+    bool is_direct =
+        function_names_.count(call.callee) > 0 ||
+        extern_names_.count(call.callee)   > 0;
+
+    if (is_direct) {
+        // call known function / extern by name
+        out_ << "  call " << call.callee << "\n";
+    } else {
+        // call through function pointer variable
+        out_ << "  movq " << slot(call.callee) << ", %r10\n";
+        out_ << "  call *%r10\n";
+    }
     
     // Store return value if needed
     if (call.lhs.has_value()) {
@@ -507,7 +592,6 @@ void Codegen::emit_call(const Call& call) {
 
 void Codegen::emit_gfp(const Gfp& g) {
     out_ << "  movq " << slot(g.src) << ", %r8\n";
-    //long off = /* 8 * field_index, from struct_field_offsets_ */;
     long off = struct_field_offsets_.at(g.sid).at(g.field);
     out_ << "  leaq " << off << "(%r8), %r9\n";
     out_ << "  movq %r9, " << slot(g.lhs) << "\n";
